@@ -3,46 +3,54 @@ using UnityEngine;
 public class MoverCamara : MonoBehaviour
 {
     public Transform camara;
-
     public Transform camPos_Mesa;
     public Transform camPos_Toppings;
+    public float duracionMovimiento = .5f;
 
-    public float velocidadCamara = 6f;
-
-    private Vector3 destino;
+    private Vector3 posicionInicial;
+    private Vector3 posicionFinal;
+    private float tiempoTranscurrido = 0f;
     private bool moviendo = false;
 
     public void MoverAToppings()
     {
-        destino = camPos_Toppings.position;
-        moviendo = true;
-        Debug.Log("Cámara viajando a toppings...");
+        IniciarMovimiento(camPos_Toppings.position);
     }
 
     public void MoverAMesa()
     {
-        destino = camPos_Mesa.position;
+        IniciarMovimiento(camPos_Mesa.position);
+    }
+
+    void IniciarMovimiento(Vector3 destino)
+    {
+        posicionInicial = camara.position;
+        posicionFinal = destino;
+        tiempoTranscurrido = 0f;
         moviendo = true;
-        Debug.Log("Cámara viajando a la mesa...");
+    }
+
+    public bool EstaMoviendo()
+    {
+        return moviendo;
     }
 
     void Update()
     {
         if (!moviendo) return;
 
-        camara.position = Vector3.MoveTowards(
-            camara.position,
-            destino,
-            velocidadCamara * Time.deltaTime
-        );
+        tiempoTranscurrido += Time.deltaTime;
+        float t = tiempoTranscurrido / duracionMovimiento;
 
-        float distancia = Vector3.Distance(camara.position, destino);
-
-        if (distancia < 0.01f)
+        if (t >= 1f)
         {
-            camara.position = destino;
+            camara.position = posicionFinal;
             moviendo = false;
-            Debug.Log("¡Cámara llegó a su destino!");
+
+            return;
         }
+
+        float suavizado = Mathf.SmoothStep(0f, 1f, t);
+        camara.position = Vector3.Lerp(posicionInicial, posicionFinal, suavizado);
     }
 }

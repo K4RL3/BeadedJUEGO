@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.SceneView;
 
 public class Vasos : MonoBehaviour
 {
     public Transform vasoChico;
     public Transform vasoGrande;
     public Transform workSpot;
+    public Transform workSpot_Toppings;
+    public Transform camara;
 
     public float velocidadMovimiento = 3f;
     public float escalaFinal = 1.3f;
@@ -16,8 +17,11 @@ public class Vasos : MonoBehaviour
     private Transform vasoElegido = null;
     private bool yaEligio = false;
     private bool yaLlego = false;
+    private bool camaraLlego = false;
+    private bool vasoEnToppings = false;
     private float escalaOriginalChico;
     private float escalaOriginalGrande;
+    private float escalaOriginalElegida;
 
     void Start()
     {
@@ -35,6 +39,14 @@ public class Vasos : MonoBehaviour
         else if (!yaLlego)
         {
             MoverAlCentro();
+        }
+        else if (!camaraLlego)
+        {
+            VerificarCamara();
+        }
+        else if (!vasoEnToppings)
+        {
+            ColocarVasoEnToppings();
         }
     }
 
@@ -73,14 +85,14 @@ public class Vasos : MonoBehaviour
             if (golpe.transform == vasoChico)
             {
                 vasoElegido = vasoChico;
+                escalaOriginalElegida = escalaOriginalChico;
                 yaEligio = true;
-                Debug.Log("Elegiste el vaso CHICO");
             }
             else if (golpe.transform == vasoGrande)
             {
                 vasoElegido = vasoGrande;
+                escalaOriginalElegida = escalaOriginalGrande;
                 yaEligio = true;
-                Debug.Log("Elegiste el vaso GRANDE");
             }
         }
     }
@@ -98,12 +110,42 @@ public class Vasos : MonoBehaviour
         if (distancia < 0.01f)
         {
             vasoElegido.position = workSpot.position;
-            vasoElegido.localScale *= escalaFinal;
+            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
             yaLlego = true;
-            Debug.Log("¡Vaso listo en el centro!");
+
+            vasoElegido.SetParent(camara);
 
             if (cameraMover != null)
                 cameraMover.MoverAToppings();
+        }
+    }
+
+    void VerificarCamara()
+    {
+        if (cameraMover != null && !cameraMover.EstaMoviendo())
+        {
+            camaraLlego = true;
+            vasoElegido.SetParent(null);
+        }
+    }
+
+    void ColocarVasoEnToppings()
+    {
+        vasoElegido.position = Vector3.MoveTowards(
+            vasoElegido.position,
+            workSpot_Toppings.position,
+            velocidadMovimiento * Time.deltaTime
+        );
+
+        float distancia = Vector3.Distance(vasoElegido.position, workSpot_Toppings.position);
+
+        if (distancia < 0.01f)
+        {
+            vasoElegido.position = workSpot_Toppings.position;
+            vasoElegido.rotation = workSpot_Toppings.rotation;
+            vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
+
+            vasoEnToppings = true;
         }
     }
 }
