@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.SceneView;
 
 public class Vasos : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Vasos : MonoBehaviour
 
     public float velocidadMovimiento = 3f;
     public float escalaFinal = 1.3f;
+
+    public MoverCamara cameraMover;
 
     private Transform vasoElegido = null;
     private bool yaEligio = false;
@@ -98,6 +101,9 @@ public class Vasos : MonoBehaviour
             vasoElegido.localScale *= escalaFinal;
             yaLlego = true;
             Debug.Log("¡Vaso listo en el centro!");
+
+            if (cameraMover != null)
+                cameraMover.MoverAToppings();
         }
     }
 }
