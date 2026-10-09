@@ -2,10 +2,15 @@
 
 public class NavegadorEstacion : MonoBehaviour
 {
-    public MoverCamara cameraMover;
-    public Transform[] estaciones;
+    [SerializeField] private Transform[] estaciones;
 
+    private MoverCamara cameraMover;
     private int estacionActual = 0;
+
+    void Start()
+    {
+        cameraMover = GetComponent<MoverCamara>();
+    }
 
     public void BotonAtras()
     {

@@ -10,12 +10,6 @@ public class Vasos : MonoBehaviour
     public GameObject prefabVasoChico;
     public GameObject prefabVasoGrande;
 
-    public float duracionCrecimiento = 0.3f;
-    public float escalaFinal = 1.5f;
-    public float velocidadMovimiento = 3f;
-    public float alturaSpawnReemplazo = 3f;
-    public float velocidadCaidaReemplazo = 4f;
-
     private Transform vasoElegido = null;
     private bool yaEligio = false;
     private bool terminocrecimiento = false;
@@ -94,8 +88,7 @@ public class Vasos : MonoBehaviour
                 escalaOriginalElegida = escalaOriginalChico;
                 posicionOriginalElegida = vasoChico.position;
                 yaEligio = true;
-                tiempoCrecimiento = 0f;
-                Debug.Log("Elegiste el vaso CHICO");
+                tiempoCrecimiento = 0;
             }
             else if (golpe.transform == vasoGrande)
             {
@@ -105,7 +98,6 @@ public class Vasos : MonoBehaviour
                 posicionOriginalElegida = vasoGrande.position;
                 yaEligio = true;
                 tiempoCrecimiento = 0f;
-                Debug.Log("Elegiste el vaso GRANDE");
             }
         }
     }
@@ -113,19 +105,19 @@ public class Vasos : MonoBehaviour
     void Crecer()
     {
         tiempoCrecimiento += Time.deltaTime;
-        float t = tiempoCrecimiento / duracionCrecimiento;
+        float t = tiempoCrecimiento / 0.3f;
 
         if (t >= 1f)
         {
-            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
+            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * 1.5f);
             terminocrecimiento = true;
             SpawnReplace();
-            Debug.Log("Vaso creció, aparece reemplazo cayendo desde arriba");
+
             return;
         }
 
         float suavizado = Mathf.SmoothStep(0f, 1f, t);
-        float escalaActual = Mathf.Lerp(escalaOriginalElegida, escalaOriginalElegida * escalaFinal, suavizado);
+        float escalaActual = Mathf.Lerp(escalaOriginalElegida, escalaOriginalElegida * 1.5f, suavizado);
         vasoElegido.localScale = Vector3.one * escalaActual;
     }
 
@@ -133,7 +125,7 @@ public class Vasos : MonoBehaviour
     {
         GameObject prefab = vasoEsChico ? prefabVasoChico : prefabVasoGrande;
 
-        Vector3 spawnPos = posicionOriginalElegida + Vector3.up * alturaSpawnReemplazo;
+        Vector3 spawnPos = posicionOriginalElegida + Vector3.up * 3f;
         reemplazoActual = Instantiate(prefab, spawnPos, Quaternion.identity);
         reemplazoActual.transform.localScale = Vector3.one * escalaOriginalElegida;
 
@@ -152,7 +144,7 @@ public class Vasos : MonoBehaviour
         reemplazoActual.transform.position = Vector3.MoveTowards(
             reemplazoActual.transform.position,
             posicionDestinoReemplazo,
-            velocidadCaidaReemplazo * Time.deltaTime
+            4f * Time.deltaTime
         );
 
         float distancia = Vector3.Distance(reemplazoActual.transform.position, posicionDestinoReemplazo);
@@ -161,7 +153,6 @@ public class Vasos : MonoBehaviour
         {
             reemplazoActual.transform.position = posicionDestinoReemplazo;
             reemplazoCayendo = false;
-            Debug.Log("Reemplazo colocado en la repisa");
         }
     }
 
@@ -170,7 +161,7 @@ public class Vasos : MonoBehaviour
         vasoElegido.position = Vector3.MoveTowards(
             vasoElegido.position,
             workSpot_Toppings.position,
-            velocidadMovimiento * Time.deltaTime
+            3f * Time.deltaTime
         );
 
         float distancia = Vector3.Distance(vasoElegido.position, workSpot_Toppings.position);
@@ -181,7 +172,6 @@ public class Vasos : MonoBehaviour
             vasoElegido.rotation = workSpot_Toppings.rotation;
             vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
             llegoAToppings = true;
-            Debug.Log("¡Vaso llegó a la mesa de toppings y volvió a escala normal!");
         }
     }
 }

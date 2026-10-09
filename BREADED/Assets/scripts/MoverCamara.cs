@@ -2,15 +2,20 @@ using UnityEngine;
 
 public class MoverCamara : MonoBehaviour
 {
-    public Transform camara;
-    public Transform camPos_Mesa;
-    public Transform camPos_Toppings;
-    public float duracionMovimiento = .5f;
+    [SerializeField] private Transform camPos_Mesa;
+    [SerializeField] private Transform camPos_Toppings;
+    [SerializeField] private float duracionMovimiento = 0.8f;
 
+    private Transform camara;
     private Vector3 posicionInicial;
     private Vector3 posicionFinal;
     private float tiempoTranscurrido = 0f;
     private bool moviendo = false;
+
+    void Start()
+    {
+        camara = Camera.main.transform;
+    }
 
     public void MoverAToppings()
     {
@@ -51,7 +56,6 @@ public class MoverCamara : MonoBehaviour
         {
             camara.position = posicionFinal;
             moviendo = false;
-
             return;
         }
 
