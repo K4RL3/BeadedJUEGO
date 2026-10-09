@@ -4,8 +4,8 @@ public class NavegadorEstacion : MonoBehaviour
 {
     [SerializeField] private Transform[] estaciones;
 
-    private MoverCamara cameraMover;
-    private int estacionActual = 0;
+       MoverCamara cameraMover;
+    int estacionActual = 0;
 
     void Start()
     {
@@ -18,7 +18,6 @@ public class NavegadorEstacion : MonoBehaviour
         {
             estacionActual--;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
-            Debug.Log("Atrás → Estación " + estacionActual);
         }
     }
 
@@ -28,7 +27,6 @@ public class NavegadorEstacion : MonoBehaviour
         {
             estacionActual++;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
-            Debug.Log("Adelante → Estación " + estacionActual);
         }
     }
 }

@@ -10,20 +10,20 @@ public class Vasos : MonoBehaviour
     public GameObject prefabVasoChico;
     public GameObject prefabVasoGrande;
 
-    private Transform vasoElegido = null;
-    private bool yaEligio = false;
-    private bool terminocrecimiento = false;
-    private bool llegoAToppings = false;
-    private bool vasoEsChico = false;
-    private float escalaOriginalChico;
-    private float escalaOriginalGrande;
-    private float escalaOriginalElegida;
-    private Vector3 posicionOriginalElegida;
-    private float tiempoCrecimiento = 0f;
+    Transform vasoElegido = null;
+    bool yaEligio = false;
+    bool terminocrecimiento = false;
+    bool llegoAToppings = false;
+    bool vasoEsChico = false;
+    float escalaOriginalChico;
+    float escalaOriginalGrande;
+    float escalaOriginalElegida;
+    Vector3 posicionOriginalElegida;
+    float tiempoCrecimiento = 0f;
 
-    private GameObject reemplazoActual;
-    private Vector3 posicionDestinoReemplazo;
-    private bool reemplazoCayendo = false;
+    GameObject reemplazoActual;
+    Vector3 posicionDestinoReemplazo;
+    bool reemplazoCayendo = false;
 
     void Start()
     {
