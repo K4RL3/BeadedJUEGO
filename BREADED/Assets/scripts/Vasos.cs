@@ -5,23 +5,31 @@ public class Vasos : MonoBehaviour
 {
     public Transform vasoChico;
     public Transform vasoGrande;
-    public Transform workSpot;
     public Transform workSpot_Toppings;
-    public Transform camara;
 
+    public GameObject prefabVasoChico;
+    public GameObject prefabVasoGrande;
+
+    public float duracionCrecimiento = 0.3f;
+    public float escalaFinal = 1.5f;
     public float velocidadMovimiento = 3f;
-    public float escalaFinal = 1.3f;
-
-    public MoverCamara cameraMover;
+    public float alturaSpawnReemplazo = 3f;
+    public float velocidadCaidaReemplazo = 4f;
 
     private Transform vasoElegido = null;
     private bool yaEligio = false;
-    private bool yaLlego = false;
-    private bool camaraLlego = false;
-    private bool vasoEnToppings = false;
+    private bool terminocrecimiento = false;
+    private bool llegoAToppings = false;
+    private bool vasoEsChico = false;
     private float escalaOriginalChico;
     private float escalaOriginalGrande;
     private float escalaOriginalElegida;
+    private Vector3 posicionOriginalElegida;
+    private float tiempoCrecimiento = 0f;
+
+    private GameObject reemplazoActual;
+    private Vector3 posicionDestinoReemplazo;
+    private bool reemplazoCayendo = false;
 
     void Start()
     {
@@ -36,17 +44,14 @@ public class Vasos : MonoBehaviour
             DetectarHover();
             DetectarClick();
         }
-        else if (!yaLlego)
+        else if (!terminocrecimiento)
         {
-            MoverAlCentro();
+            Crecer();
         }
-        else if (!camaraLlego)
+        else
         {
-            VerificarCamara();
-        }
-        else if (!vasoEnToppings)
-        {
-            ColocarVasoEnToppings();
+            if (reemplazoCayendo) MoverReemplazo();
+            if (!llegoAToppings) MoverAToppings();
         }
     }
 
@@ -85,51 +90,82 @@ public class Vasos : MonoBehaviour
             if (golpe.transform == vasoChico)
             {
                 vasoElegido = vasoChico;
+                vasoEsChico = true;
                 escalaOriginalElegida = escalaOriginalChico;
+                posicionOriginalElegida = vasoChico.position;
                 yaEligio = true;
+                tiempoCrecimiento = 0f;
+                Debug.Log("Elegiste el vaso CHICO");
             }
             else if (golpe.transform == vasoGrande)
             {
                 vasoElegido = vasoGrande;
+                vasoEsChico = false;
                 escalaOriginalElegida = escalaOriginalGrande;
+                posicionOriginalElegida = vasoGrande.position;
                 yaEligio = true;
+                tiempoCrecimiento = 0f;
+                Debug.Log("Elegiste el vaso GRANDE");
             }
         }
     }
 
-    void MoverAlCentro()
+    void Crecer()
     {
-        vasoElegido.position = Vector3.MoveTowards(
-            vasoElegido.position,
-            workSpot.position,
-            velocidadMovimiento * Time.deltaTime
+        tiempoCrecimiento += Time.deltaTime;
+        float t = tiempoCrecimiento / duracionCrecimiento;
+
+        if (t >= 1f)
+        {
+            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
+            terminocrecimiento = true;
+            SpawnReplace();
+            Debug.Log("Vaso creció, aparece reemplazo cayendo desde arriba");
+            return;
+        }
+
+        float suavizado = Mathf.SmoothStep(0f, 1f, t);
+        float escalaActual = Mathf.Lerp(escalaOriginalElegida, escalaOriginalElegida * escalaFinal, suavizado);
+        vasoElegido.localScale = Vector3.one * escalaActual;
+    }
+
+    void SpawnReplace()
+    {
+        GameObject prefab = vasoEsChico ? prefabVasoChico : prefabVasoGrande;
+
+        Vector3 spawnPos = posicionOriginalElegida + Vector3.up * alturaSpawnReemplazo;
+        reemplazoActual = Instantiate(prefab, spawnPos, Quaternion.identity);
+        reemplazoActual.transform.localScale = Vector3.one * escalaOriginalElegida;
+
+        posicionDestinoReemplazo = posicionOriginalElegida;
+        reemplazoCayendo = true;
+    }
+
+    void MoverReemplazo()
+    {
+        if (reemplazoActual == null)
+        {
+            reemplazoCayendo = false;
+            return;
+        }
+
+        reemplazoActual.transform.position = Vector3.MoveTowards(
+            reemplazoActual.transform.position,
+            posicionDestinoReemplazo,
+            velocidadCaidaReemplazo * Time.deltaTime
         );
 
-        float distancia = Vector3.Distance(vasoElegido.position, workSpot.position);
+        float distancia = Vector3.Distance(reemplazoActual.transform.position, posicionDestinoReemplazo);
 
         if (distancia < 0.01f)
         {
-            vasoElegido.position = workSpot.position;
-            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
-            yaLlego = true;
-
-            vasoElegido.SetParent(camara);
-
-            if (cameraMover != null)
-                cameraMover.MoverAToppings();
+            reemplazoActual.transform.position = posicionDestinoReemplazo;
+            reemplazoCayendo = false;
+            Debug.Log("Reemplazo colocado en la repisa");
         }
     }
 
-    void VerificarCamara()
-    {
-        if (cameraMover != null && !cameraMover.EstaMoviendo())
-        {
-            camaraLlego = true;
-            vasoElegido.SetParent(null);
-        }
-    }
-
-    void ColocarVasoEnToppings()
+    void MoverAToppings()
     {
         vasoElegido.position = Vector3.MoveTowards(
             vasoElegido.position,
@@ -144,8 +180,8 @@ public class Vasos : MonoBehaviour
             vasoElegido.position = workSpot_Toppings.position;
             vasoElegido.rotation = workSpot_Toppings.rotation;
             vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
-
-            vasoEnToppings = true;
+            llegoAToppings = true;
+            Debug.Log("¡Vaso llegó a la mesa de toppings y volvió a escala normal!");
         }
     }
 }

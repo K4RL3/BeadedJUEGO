@@ -22,6 +22,11 @@ public class MoverCamara : MonoBehaviour
         IniciarMovimiento(camPos_Mesa.position);
     }
 
+    public void MoverAEstacion(Transform destino)
+    {
+        IniciarMovimiento(destino.position);
+    }
+
     void IniciarMovimiento(Vector3 destino)
     {
         posicionInicial = camara.position;
