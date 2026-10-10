@@ -2,9 +2,9 @@
 
 public class NavegadorEstacion : MonoBehaviour
 {
-    [SerializeField] private Transform[] estaciones;
+    public Transform[] estaciones;
 
-       MoverCamara cameraMover;
+    MoverCamara cameraMover;
     int estacionActual = 0;
 
     void Start()
