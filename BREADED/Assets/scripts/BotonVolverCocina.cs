@@ -7,6 +7,9 @@ public class BotonVolverCocina : MonoBehaviour
 
     public void VolverALaCocina()
     {
+        if (ManejadorAudio.Instance != null)
+            ManejadorAudio.Instance.PlayBoton();
+
         SceneManager.LoadScene(nombreEscenaCocina);
     }
 }
