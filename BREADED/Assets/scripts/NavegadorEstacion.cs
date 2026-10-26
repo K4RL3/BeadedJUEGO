@@ -1,15 +1,26 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro; // Importante para usar TextMeshPro
 
 public class NavegadorEstacion : MonoBehaviour
 {
     [SerializeField] private Transform[] estaciones;
+    public static int estacionInicial = 0;
 
-       MoverCamara cameraMover;
+    [Header("Textos de los Botones")]
+    public TextMeshProUGUI textoBotonAtras;
+    public TextMeshProUGUI textoBotonAdelante;
+
+    MoverCamara cameraMover;
     int estacionActual = 0;
 
     void Start()
     {
         cameraMover = GetComponent<MoverCamara>();
+        estacionActual = estacionInicial;
+        cameraMover.MoverAEstacion(estaciones[estacionActual]);
+
+        ActualizarTextos(); // Actualizamos los textos al entrar
     }
 
     public void BotonAtras()
@@ -18,6 +29,11 @@ public class NavegadorEstacion : MonoBehaviour
         {
             estacionActual--;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            ActualizarTextos(); // Actualizamos al cambiar
+        }
+        else
+        {
+            SceneManager.LoadScene("EstaciónPedidos1");
         }
     }
 
@@ -27,6 +43,21 @@ public class NavegadorEstacion : MonoBehaviour
         {
             estacionActual++;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            ActualizarTextos(); // Actualizamos al cambiar
+        }
+    }
+
+    void ActualizarTextos()
+    {
+        if (estacionActual == 0) // En la Mesa (Armado)
+        {
+            if (textoBotonAtras != null) textoBotonAtras.text = "Clientes";
+            if (textoBotonAdelante != null) textoBotonAdelante.text = "Toppings";
+        }
+        else if (estacionActual == 1) // En Toppings
+        {
+            if (textoBotonAtras != null) textoBotonAtras.text = "Armado";
+            if (textoBotonAdelante != null) textoBotonAdelante.text = ""; // O el texto que quieras
         }
     }
 }
