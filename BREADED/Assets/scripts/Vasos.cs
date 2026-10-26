@@ -6,29 +6,52 @@ public class Vasos : MonoBehaviour
     public Transform vasoChico;
     public Transform vasoGrande;
     public Transform workSpot_Toppings;
-
     public GameObject prefabVasoChico;
     public GameObject prefabVasoGrande;
+    public float escalaFinal = 1.5f;
+    public float velocidadMovimiento = 3f;
 
-    Transform vasoElegido = null;
-    bool yaEligio = false;
-    bool terminocrecimiento = false;
-    bool llegoAToppings = false;
-    bool vasoEsChico = false;
+    public static bool vasoYaElegido = false;
+    public static bool eraChico = false;
+
+    Transform vasoElegido;
+    Transform ultimoHover;
+    bool yaEligio;
+    bool terminocrecimiento;
+    bool llegoAToppings;
+    bool vasoEsChico;
     float escalaOriginalChico;
     float escalaOriginalGrande;
     float escalaOriginalElegida;
     Vector3 posicionOriginalElegida;
-    float tiempoCrecimiento = 0f;
+    float tiempoCrecimiento;
 
     GameObject reemplazoActual;
     Vector3 posicionDestinoReemplazo;
-    bool reemplazoCayendo = false;
+    bool reemplazoCayendo;
 
     void Start()
     {
         escalaOriginalChico = vasoChico.localScale.x;
         escalaOriginalGrande = vasoGrande.localScale.x;
+
+        if (vasoYaElegido)
+        {
+            SpawnearVasoGuardado();
+        }
+    }
+
+    void SpawnearVasoGuardado()
+    {
+        GameObject prefab = eraChico ? prefabVasoChico : prefabVasoGrande;
+        GameObject vaso = Instantiate(prefab, workSpot_Toppings.position, workSpot_Toppings.rotation);
+
+        float escala = eraChico ? escalaOriginalChico : escalaOriginalGrande;
+        vaso.transform.localScale = Vector3.one * escala;
+
+        yaEligio = true;
+        terminocrecimiento = true;
+        llegoAToppings = true;
     }
 
     void Update()
@@ -57,16 +80,25 @@ public class Vasos : MonoBehaviour
         {
             if (golpe.transform == vasoChico)
             {
+                if (ultimoHover != vasoChico && ManejadorAudio.Instance != null)
+                    ManejadorAudio.Instance.PlayHover();
+                ultimoHover = vasoChico;
+
                 vasoChico.localScale = Vector3.one * (escalaOriginalChico * 1.1f);
                 vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
             }
             else if (golpe.transform == vasoGrande)
             {
+                if (ultimoHover != vasoGrande && ManejadorAudio.Instance != null)
+                    ManejadorAudio.Instance.PlayHover();
+                ultimoHover = vasoGrande;
+
                 vasoGrande.localScale = Vector3.one * (escalaOriginalGrande * 1.1f);
                 vasoChico.localScale = Vector3.one * escalaOriginalChico;
             }
             else
             {
+                ultimoHover = null;
                 vasoChico.localScale = Vector3.one * escalaOriginalChico;
                 vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
             }
@@ -88,7 +120,15 @@ public class Vasos : MonoBehaviour
                 escalaOriginalElegida = escalaOriginalChico;
                 posicionOriginalElegida = vasoChico.position;
                 yaEligio = true;
-                tiempoCrecimiento = 0;
+                tiempoCrecimiento = 0f;
+
+                vasoYaElegido = true;
+                eraChico = true;
+
+                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlaySeleccion();
+                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCrecimiento();
+
+                Debug.Log("Elegiste el vaso CHICO");
             }
             else if (golpe.transform == vasoGrande)
             {
@@ -98,6 +138,14 @@ public class Vasos : MonoBehaviour
                 posicionOriginalElegida = vasoGrande.position;
                 yaEligio = true;
                 tiempoCrecimiento = 0f;
+
+                vasoYaElegido = true;
+                eraChico = false;
+
+                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlaySeleccion();
+                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCrecimiento();
+
+                Debug.Log("Elegiste el vaso GRANDE");
             }
         }
     }
@@ -109,15 +157,14 @@ public class Vasos : MonoBehaviour
 
         if (t >= 1f)
         {
-            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * 1.5f);
+            vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
             terminocrecimiento = true;
             SpawnReplace();
-
             return;
         }
 
         float suavizado = Mathf.SmoothStep(0f, 1f, t);
-        float escalaActual = Mathf.Lerp(escalaOriginalElegida, escalaOriginalElegida * 1.5f, suavizado);
+        float escalaActual = Mathf.Lerp(escalaOriginalElegida, escalaOriginalElegida * escalaFinal, suavizado);
         vasoElegido.localScale = Vector3.one * escalaActual;
     }
 
@@ -144,7 +191,7 @@ public class Vasos : MonoBehaviour
         reemplazoActual.transform.position = Vector3.MoveTowards(
             reemplazoActual.transform.position,
             posicionDestinoReemplazo,
-            4f * Time.deltaTime
+            velocidadMovimiento * Time.deltaTime
         );
 
         float distancia = Vector3.Distance(reemplazoActual.transform.position, posicionDestinoReemplazo);
@@ -153,6 +200,8 @@ public class Vasos : MonoBehaviour
         {
             reemplazoActual.transform.position = posicionDestinoReemplazo;
             reemplazoCayendo = false;
+
+            if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCaidaVaso();
         }
     }
 
@@ -161,7 +210,7 @@ public class Vasos : MonoBehaviour
         vasoElegido.position = Vector3.MoveTowards(
             vasoElegido.position,
             workSpot_Toppings.position,
-            3f * Time.deltaTime
+            velocidadMovimiento * Time.deltaTime
         );
 
         float distancia = Vector3.Distance(vasoElegido.position, workSpot_Toppings.position);
@@ -172,6 +221,7 @@ public class Vasos : MonoBehaviour
             vasoElegido.rotation = workSpot_Toppings.rotation;
             vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
             llegoAToppings = true;
+            Debug.Log("¡Vaso llegó a la mesa de toppings!");
         }
     }
 }

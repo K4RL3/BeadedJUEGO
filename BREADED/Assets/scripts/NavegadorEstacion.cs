@@ -1,6 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro; // Importante para usar TextMeshPro
+
+public class NavegadorEstacion : MonoBehaviour
+{
+    public Transform[] estaciones;
+    public string nombreEscenaAnotar = "AtendiendoClientes";
+
 
 public class NavegadorEstacion : MonoBehaviour
 {
@@ -25,10 +31,18 @@ public class NavegadorEstacion : MonoBehaviour
 
     public void BotonAtras()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
+
         if (estacionActual > 0)
         {
             estacionActual--;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            Debug.Log("Atrás → Estación " + estacionActual);
+        }
+        else
+        {
+            SceneManager.LoadScene(nombreEscenaAnotar);
+            Debug.Log("Atrás → Cargando escena de anotar pedido");
             ActualizarTextos(); // Actualizamos al cambiar
         }
         else
@@ -39,10 +53,13 @@ public class NavegadorEstacion : MonoBehaviour
 
     public void BotonAdelante()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
+
         if (estacionActual < estaciones.Length - 1)
         {
             estacionActual++;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            Debug.Log("Adelante → Estación " + estacionActual);
             ActualizarTextos(); // Actualizamos al cambiar
         }
     }
