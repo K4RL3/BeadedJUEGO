@@ -1,2 +1,19 @@
 fileFormatVersion: 2
 guid: 0bc2f1d636b1aa44fbb4b5d505d913b3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - musicaSource: {instanceID: 0}
+  - sfxSource: {instanceID: 0}
+  - musicaFondo: {fileID: 8300000, guid: a0f01807f39b33d4bbaa728b2b2c1ecb, type: 3}
+  - sonidoHover: {fileID: 8300000, guid: 537545b420bf4044ea3ea663fd6ba384, type: 3}
+  - sonidoSeleccion: {fileID: 8300000, guid: 31d1ffcafae3c5945b3fb28fcba59e9b, type: 3}
+  - sonidoCrecimiento: {fileID: 8300000, guid: 1172aadfde1604b4c9cd41a76171e2b9, type: 3}
+  - sonidoCaidaVaso: {fileID: 8300000, guid: 9562153a071a0b64c95e036fe76504c7, type: 3}
+  - sonidoBoton: {fileID: 8300000, guid: 19e6176a833ed9a4186de95cca3ae9c3, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

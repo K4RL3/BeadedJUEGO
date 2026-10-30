@@ -12,7 +12,7 @@ public class MoverCamara : MonoBehaviour
     float tiempoTranscurrido = 0f;
     bool moviendo = false;
 
-    void Start()
+    void Awake()
     {
         camara = Camera.main.transform;
     }

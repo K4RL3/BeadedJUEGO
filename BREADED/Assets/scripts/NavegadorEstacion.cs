@@ -1,12 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Importante para usar TextMeshPro
-
-public class NavegadorEstacion : MonoBehaviour
-{
-    public Transform[] estaciones;
-    public string nombreEscenaAnotar = "AtendiendoClientes";
-
+using TMPro;
 
 public class NavegadorEstacion : MonoBehaviour
 {
@@ -25,25 +19,19 @@ public class NavegadorEstacion : MonoBehaviour
         cameraMover = GetComponent<MoverCamara>();
         estacionActual = estacionInicial;
         cameraMover.MoverAEstacion(estaciones[estacionActual]);
-
-        ActualizarTextos(); // Actualizamos los textos al entrar
+        ActualizarTextos();
     }
 
     public void BotonAtras()
     {
+        // 🎵 SONIDO DEL BOTÓN
         if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
 
         if (estacionActual > 0)
         {
             estacionActual--;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
-            Debug.Log("Atrás → Estación " + estacionActual);
-        }
-        else
-        {
-            SceneManager.LoadScene(nombreEscenaAnotar);
-            Debug.Log("Atrás → Cargando escena de anotar pedido");
-            ActualizarTextos(); // Actualizamos al cambiar
+            ActualizarTextos();
         }
         else
         {
@@ -53,28 +41,28 @@ public class NavegadorEstacion : MonoBehaviour
 
     public void BotonAdelante()
     {
+        // 🎵 SONIDO DEL BOTÓN
         if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
 
         if (estacionActual < estaciones.Length - 1)
         {
             estacionActual++;
             cameraMover.MoverAEstacion(estaciones[estacionActual]);
-            Debug.Log("Adelante → Estación " + estacionActual);
-            ActualizarTextos(); // Actualizamos al cambiar
+            ActualizarTextos();
         }
     }
 
     void ActualizarTextos()
     {
-        if (estacionActual == 0) // En la Mesa (Armado)
+        if (estacionActual == 0)
         {
             if (textoBotonAtras != null) textoBotonAtras.text = "Clientes";
             if (textoBotonAdelante != null) textoBotonAdelante.text = "Toppings";
         }
-        else if (estacionActual == 1) // En Toppings
+        else if (estacionActual == 1)
         {
             if (textoBotonAtras != null) textoBotonAtras.text = "Armado";
-            if (textoBotonAdelante != null) textoBotonAdelante.text = ""; // O el texto que quieras
+            if (textoBotonAdelante != null) textoBotonAdelante.text = "";
         }
     }
 }

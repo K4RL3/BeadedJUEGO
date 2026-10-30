@@ -12,18 +12,23 @@ public class Navegador2 : MonoBehaviour
 
     void Start()
     {
-        // Al entrar a AtendiendoClientes, configuramos los textos
-        if (textoBotonAtras != null) textoBotonAtras.text = "Volver";
-        if (textoBotonAdelante != null) textoBotonAdelante.text = "Armado";
+        if (textoBotonAtras != null) textoBotonAtras.text = "";
+        if (textoBotonAdelante != null) textoBotonAdelante.text = "Armar";
     }
 
     public void BotonAtras()
     {
-        Debug.Log("Ya estamos en la primera estación (Atendiendo Clientes)");
+        // 🎵 SONIDO DEL BOTÓN
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
+
+        Debug.Log("Ya estamos en la primera estación");
     }
 
     public void BotonAdelante()
     {
+        // 🎵 SONIDO DEL BOTÓN
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
+
         NavegadorEstacion.estacionInicial = 0;
         SceneManager.LoadScene(nombreEscenaCocina);
     }
