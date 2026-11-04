@@ -19,7 +19,6 @@ public class ControladorPedido : MonoBehaviour
 
     void Start()
     {
-        // Ocultamos la burbuja y el botón al inicio
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
         if (botonSiguiente != null) botonSiguiente.SetActive(false);
     }
@@ -41,17 +40,14 @@ public class ControladorPedido : MonoBehaviour
                 transform.position = puntoLlegada.position;
                 yaLlego = true;
 
-                // Cuando llega, mostramos ambos
                 if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
                 if (botonSiguiente != null) botonSiguiente.SetActive(true);
             }
         }
     }
 
-    // Función que llamará el botón
     public void IrAEstacionPedido2()
     {
-        Debug.Log("¡El botón funcionó! Intentando cargar escena...");
         SceneManager.LoadScene(nombreEscenaPedido2);
     }
 }
