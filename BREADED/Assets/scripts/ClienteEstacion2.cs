@@ -6,17 +6,22 @@ using UnityEngine.SceneManagement;
 public class ClienteEstacion2 : MonoBehaviour
 {
     [Header("UI del NPC")]
-    public GameObject burbujaDialogo;       // El fondo de la nube
-    public Image[] todosLosIconosEnBurbuja; // AQUÍ ARRASTRA TODOS LOS SPRITES DE LA BURBUJA
+    public GameObject burbujaDialogo;
+    public Image[] todosLosIconosEnBurbuja;
 
     [Header("Pedido")]
-    public int[] indicesDelPedido;          // Los números de los ingredientes que pide ESTE NPC (ej. 0 para Fresa, 2 para Kiwi)
+    public int[] indicesDelPedido;
     public string escenaCocina = "EstaciónArmado";
     public TicketVisual ticketVisual;
 
     void Start()
     {
-        // Apagamos la burbuja y todos los ingredientes al inicio
+        if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+        {
+            if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
+            return;
+        }
+
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
 
         for (int i = 0; i < todosLosIconosEnBurbuja.Length; i++)
@@ -31,12 +36,10 @@ public class ClienteEstacion2 : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        // Recorremos solo los ingredientes que este NPC específico quiere
         for (int i = 0; i < indicesDelPedido.Length; i++)
         {
             int indiceSprite = indicesDelPedido[i];
 
-            // 1. Mostramos la nube y el ingrediente específico
             if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
 
             if (indiceSprite < todosLosIconosEnBurbuja.Length)
@@ -44,17 +47,13 @@ public class ClienteEstacion2 : MonoBehaviour
                 todosLosIconosEnBurbuja[indiceSprite].gameObject.SetActive(true);
             }
 
-            // 2. Lo mandamos al ticket
             if (ticketVisual != null)
             {
-                // Asumiendo que tu TicketVisual también usa índices o le pasas el Sprite directo
                 ticketVisual.AgregarIcono(todosLosIconosEnBurbuja[indiceSprite].sprite);
             }
 
-            // 3. Esperamos 1 segundo
             yield return new WaitForSeconds(1f);
 
-            // 4. Apagamos la nube y el ingrediente
             if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
 
             if (indiceSprite < todosLosIconosEnBurbuja.Length)
@@ -63,6 +62,11 @@ public class ClienteEstacion2 : MonoBehaviour
             }
 
             yield return new WaitForSeconds(0.3f);
+        }
+
+        if (!PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+        {
+            PedidoMemoria.NpcsAtendidos.Add(gameObject.name);
         }
 
         yield return new WaitForSeconds(1f);

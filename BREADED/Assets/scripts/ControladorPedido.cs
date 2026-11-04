@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class ControladorPedido : MonoBehaviour
 {
@@ -16,15 +15,31 @@ public class ControladorPedido : MonoBehaviour
     public string nombreEscenaPedido2 = "EstaciónPedidos2";
 
     bool yaLlego = false;
+    bool yaFueAtendido = false; // Bandera para saber si ya pidió
 
     void Start()
     {
+        // Revisamos si este NPC ya fue atendido antes
+        if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+        {
+            yaFueAtendido = true; // Bloqueamos la lógica
+            if (puntoLlegada != null) transform.position = puntoLlegada.position;
+            yaLlego = true;
+
+            if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
+            if (botonSiguiente != null) botonSiguiente.SetActive(false);
+            return;
+        }
+
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
         if (botonSiguiente != null) botonSiguiente.SetActive(false);
     }
 
     void Update()
     {
+        // Si ya fue atendido, el Update no hace absolutamente nada
+        if (yaFueAtendido) return;
+
         if (!yaLlego)
         {
             transform.position = Vector3.MoveTowards(

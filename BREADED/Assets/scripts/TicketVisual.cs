@@ -3,19 +3,14 @@ using UnityEngine.UI;
 
 public class TicketVisual : MonoBehaviour
 {
-    [Header("Contenedor")]
-    public Transform contenedorIconos;
-    float tamañoIcono = 50f;
+    // Arrastra aquí todos tus íconos pre-acomodados
+    public GameObject[] todosLosIconos;
 
     void Start()
     {
-        // Limpiamos cualquier icono previo
-        foreach (Transform child in contenedorIconos)
-        {
-            Destroy(child.gameObject);
-        }
+        LimpiarTicket();
 
-        // Si venimos de otra escena y hay un pedido guardado, lo dibujamos todo de golpe
+        // Si hay pedido en memoria, encendemos los que tocan
         if (PedidoMemoria.IngredientesActuales != null)
         {
             foreach (Sprite sprite in PedidoMemoria.IngredientesActuales)
@@ -25,14 +20,25 @@ public class TicketVisual : MonoBehaviour
         }
     }
 
-    // Esta función la llamará el NPC de la Estación 2 para ir llenando el ticket en vivo
+    public void LimpiarTicket()
+    {
+        for (int i = 0; i < todosLosIconos.Length; i++)
+        {
+            todosLosIconos[i].SetActive(false);
+        }
+    }
+
+    // En lugar de crear uno nuevo, busca el que ya existe y lo enciende
     public void AgregarIcono(Sprite sprite)
     {
-        GameObject nuevoIcono = new GameObject("Icono_" + sprite.name);
-        nuevoIcono.transform.SetParent(contenedorIconos, false);
-
-        Image img = nuevoIcono.AddComponent<Image>();
-        img.sprite = sprite;
-        img.preserveAspect = true;
+        for (int i = 0; i < todosLosIconos.Length; i++)
+        {
+            // Si el nombre del objeto coincide con el nombre de la imagen, lo prende
+            if (todosLosIconos[i].name == sprite.name)
+            {
+                todosLosIconos[i].SetActive(true);
+                return; // Sale del bucle para no encender más
+            }
+        }
     }
 }
