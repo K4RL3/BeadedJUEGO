@@ -6,60 +6,65 @@ using UnityEngine.SceneManagement;
 public class ClienteEstacion2 : MonoBehaviour
 {
     [Header("UI del NPC")]
-    public GameObject burbujaDialogo;    // El objeto de la nube
-    public GameObject contenedorIngrediente; // El Empty donde va el sprite
-    public Image spriteIngrediente;      // El componente Image de ese Empty
+    public GameObject burbujaDialogo;       // El fondo de la nube
+    public Image[] todosLosIconosEnBurbuja; // AQUÍ ARRASTRA TODOS LOS SPRITES DE LA BURBUJA
 
     [Header("Pedido")]
-    public Sprite[] ingredientesQueQuiere;
+    public int[] indicesDelPedido;          // Los números de los ingredientes que pide ESTE NPC (ej. 0 para Fresa, 2 para Kiwi)
     public string escenaCocina = "EstaciónArmado";
     public TicketVisual ticketVisual;
 
     void Start()
     {
-        // 1. Apagamos todo al inicio
+        // Apagamos la burbuja y todos los ingredientes al inicio
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-        if (contenedorIngrediente != null) contenedorIngrediente.SetActive(false);
 
-        // 2. Guardamos en memoria para la cocina
-        PedidoMemoria.IngredientesActuales = ingredientesQueQuiere;
+        for (int i = 0; i < todosLosIconosEnBurbuja.Length; i++)
+        {
+            todosLosIconosEnBurbuja[i].gameObject.SetActive(false);
+        }
 
-        // 3. Iniciamos el dictado
         StartCoroutine(DictarPedido());
     }
 
     IEnumerator DictarPedido()
     {
-        yield return new WaitForSeconds(1f); // Pausa para entrar en escena
+        yield return new WaitForSeconds(1f);
 
-        for (int i = 0; i < ingredientesQueQuiere.Length; i++)
+        // Recorremos solo los ingredientes que este NPC específico quiere
+        for (int i = 0; i < indicesDelPedido.Length; i++)
         {
-            // 1. Encendemos la burbuja y el contenedor del ingrediente
-            if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
-            if (contenedorIngrediente != null) contenedorIngrediente.SetActive(true);
+            int indiceSprite = indicesDelPedido[i];
 
-            // 2. Asignamos la imagen del ingrediente
-            if (spriteIngrediente != null)
+            // 1. Mostramos la nube y el ingrediente específico
+            if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
+
+            if (indiceSprite < todosLosIconosEnBurbuja.Length)
             {
-                spriteIngrediente.sprite = ingredientesQueQuiere[i];
-                spriteIngrediente.preserveAspect = true; // Evita que se deforme
+                todosLosIconosEnBurbuja[indiceSprite].gameObject.SetActive(true);
             }
 
-            // 3. Lo mandamos al ticket (por si lo tienes en esta escena)
-            if (ticketVisual != null) ticketVisual.AgregarIcono(ingredientesQueQuiere[i]);
+            // 2. Lo mandamos al ticket
+            if (ticketVisual != null)
+            {
+                // Asumiendo que tu TicketVisual también usa índices o le pasas el Sprite directo
+                ticketVisual.AgregarIcono(todosLosIconosEnBurbuja[indiceSprite].sprite);
+            }
 
-            // 4. Esperamos 1 segundo (aquí se ve el ingrediente sobre la burbuja)
+            // 3. Esperamos 1 segundo
             yield return new WaitForSeconds(1f);
 
-            // 5. Apagamos la burbuja y el contenedor (desaparecen)
+            // 4. Apagamos la nube y el ingrediente
             if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-            if (contenedorIngrediente != null) contenedorIngrediente.SetActive(false);
 
-            // 6. Pequeña pausa antes del siguiente ingrediente
+            if (indiceSprite < todosLosIconosEnBurbuja.Length)
+            {
+                todosLosIconosEnBurbuja[indiceSprite].gameObject.SetActive(false);
+            }
+
             yield return new WaitForSeconds(0.3f);
         }
 
-        // 7. Terminó el dictado, pasamos a la cocina
         yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(escenaCocina);
     }

@@ -33,8 +33,6 @@ public class TicketVisual : MonoBehaviour
 
         Image img = nuevoIcono.AddComponent<Image>();
         img.sprite = sprite;
-
-        RectTransform rt = nuevoIcono.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(tamañoIcono, tamañoIcono);
+        img.preserveAspect = true;
     }
 }
