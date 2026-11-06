@@ -3,41 +3,37 @@ using UnityEngine.UI;
 
 public class TicketVisual : MonoBehaviour
 {
-    // Arrastra aquí todos tus íconos pre-acomodados
-    public GameObject[] todosLosIconos;
+    public Image[] slotsIngredientes;
 
-    void Start()
+    // Para llenarlo de golpe (Cocina)
+    public void Configurar(Sprite[] ingredientes)
     {
-        LimpiarTicket();
-
-        // Si hay pedido en memoria, encendemos los que tocan
-        if (PedidoMemoria.IngredientesActuales != null)
+        for (int i = 0; i < slotsIngredientes.Length; i++)
         {
-            foreach (Sprite sprite in PedidoMemoria.IngredientesActuales)
+            slotsIngredientes[i].sprite = null;
+            slotsIngredientes[i].color = new Color(1, 1, 1, 0);
+        }
+
+        for (int i = 0; i < ingredientes.Length; i++)
+        {
+            if (i < slotsIngredientes.Length)
             {
-                AgregarIcono(sprite);
+                slotsIngredientes[i].sprite = ingredientes[i];
+                slotsIngredientes[i].color = new Color(1, 1, 1, 1);
             }
         }
     }
 
-    public void LimpiarTicket()
-    {
-        for (int i = 0; i < todosLosIconos.Length; i++)
-        {
-            todosLosIconos[i].SetActive(false);
-        }
-    }
-
-    // En lugar de crear uno nuevo, busca el que ya existe y lo enciende
+    // Para llenarlo de a uno (Estación 2)
     public void AgregarIcono(Sprite sprite)
     {
-        for (int i = 0; i < todosLosIconos.Length; i++)
+        for (int i = 0; i < slotsIngredientes.Length; i++)
         {
-            // Si el nombre del objeto coincide con el nombre de la imagen, lo prende
-            if (todosLosIconos[i].name == sprite.name)
+            if (slotsIngredientes[i].sprite == null)
             {
-                todosLosIconos[i].SetActive(true);
-                return; // Sale del bucle para no encender más
+                slotsIngredientes[i].sprite = sprite;
+                slotsIngredientes[i].color = new Color(1, 1, 1, 1);
+                break;
             }
         }
     }

@@ -14,33 +14,34 @@ public class ControladorPedido : MonoBehaviour
     [Header("Escenas")]
     public string nombreEscenaPedido2 = "EstaciónPedidos2";
 
-    bool yaLlego = false;
-    bool yaFueAtendido = false; // Bandera para saber si ya pidió
-
     void Start()
     {
-        // Revisamos si este NPC ya fue atendido antes
-        if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+        if (PedidoMemoria.NPCLlegoALaCaja)
         {
-            yaFueAtendido = true; // Bloqueamos la lógica
-            if (puntoLlegada != null) transform.position = puntoLlegada.position;
-            yaLlego = true;
+            if (puntoLlegada != null) transform.position = PedidoMemoria.PosicionNPCGuardada;
 
+            // Si ya se tomó el pedido (revisando la lista de atendidos), destruimos la UI
+            if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+            {
+                if (burbujaDialogo != null) Destroy(burbujaDialogo);
+                if (botonSiguiente != null) Destroy(botonSiguiente);
+            }
+            else
+            {
+                if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
+                if (botonSiguiente != null) botonSiguiente.SetActive(true);
+            }
+        }
+        else
+        {
             if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
             if (botonSiguiente != null) botonSiguiente.SetActive(false);
-            return;
         }
-
-        if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-        if (botonSiguiente != null) botonSiguiente.SetActive(false);
     }
 
     void Update()
     {
-        // Si ya fue atendido, el Update no hace absolutamente nada
-        if (yaFueAtendido) return;
-
-        if (!yaLlego)
+        if (!PedidoMemoria.NPCLlegoALaCaja)
         {
             transform.position = Vector3.MoveTowards(
                 transform.position,
@@ -53,7 +54,7 @@ public class ControladorPedido : MonoBehaviour
             if (distancia < 0.01f)
             {
                 transform.position = puntoLlegada.position;
-                yaLlego = true;
+                PedidoMemoria.NPCLlegoALaCaja = true;
 
                 if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
                 if (botonSiguiente != null) botonSiguiente.SetActive(true);
@@ -63,6 +64,7 @@ public class ControladorPedido : MonoBehaviour
 
     public void IrAEstacionPedido2()
     {
+        PedidoMemoria.PosicionNPCGuardada = transform.position;
         SceneManager.LoadScene(nombreEscenaPedido2);
     }
 }

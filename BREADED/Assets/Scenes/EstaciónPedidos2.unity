@@ -2402,7 +2402,7 @@ MonoBehaviour:
   - {fileID: 733903145}
   indicesDelPedido: 0000000002000000
   escenaCocina: "Estaci\xF3nArmado"
-  ticketVisual: {fileID: 2073677894}
+  ticketEnEstacion2: {fileID: 0}
 --- !u!1 &1481722234
 GameObject:
   m_ObjectHideFlags: 0
@@ -3537,10 +3537,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 756489938ab909d45afc1cb983d9b1b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TicketVisual
-  todosLosIconos:
-  - {fileID: 552466943}
-  - {fileID: 1593742040}
-  - {fileID: 2123845177}
+  slotsIngredientes:
+  - {fileID: 552466945}
+  - {fileID: 1593742042}
+  - {fileID: 2123845179}
 --- !u!1 &2123845177
 GameObject:
   m_ObjectHideFlags: 0
