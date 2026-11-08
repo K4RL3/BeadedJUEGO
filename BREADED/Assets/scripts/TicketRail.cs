@@ -1,72 +1,44 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TicketRail : MonoBehaviour
 {
     [Header("UI")]
-    public Transform lugarTicketGrande;
-    public Transform rielContenedor;
+    public GameObject marcoDelTicket; // <-- CAMBIO: Ahora pedimos el GameObject completo del marco
+    public Transform lugarTicketGrande; // El contenedor (puede ser el mismo marco)
 
     [Header("Prefabs")]
     public GameObject prefabTicketGrande;
-    public GameObject prefabTicketChiquito;
-
-    private GameObject ticketGrandeActual;
-    private int indiceActualGrande = -1;
 
     void Start()
     {
-        foreach (Transform child in rielContenedor) Destroy(child.gameObject);
-
-        if (PedidoMemoria.PedidosActivos.Count > 0)
+        // 1. Limpiamos cualquier ticket que haya quedado
+        foreach (Transform child in lugarTicketGrande.transform)
         {
-            MostrarEnGrande(PedidoMemoria.PedidosActivos.Count - 1);
-        }
-    }
-
-    public void MostrarEnGrande(int indice)
-    {
-        if (ticketGrandeActual != null)
-        {
-            Destroy(ticketGrandeActual);
-            CrearChiquito(indiceActualGrande);
-        }
-        else
-        {
-            for (int i = 0; i < indice; i++) CrearChiquito(i);
+            Destroy(child.gameObject);
         }
 
-        ticketGrandeActual = Instantiate(prefabTicketGrande, lugarTicketGrande);
-
-        // Usa tu script TicketVisual
-        ticketGrandeActual.GetComponent<TicketVisual>().Configurar(PedidoMemoria.PedidosActivos[indice]);
-        indiceActualGrande = indice;
-    }
-
-    public void CrearChiquito(int indice)
-    {
-        GameObject chiquito = Instantiate(prefabTicketChiquito, rielContenedor);
-
-        // ¡AQUÍ ESTÁ LA CORRECCIÓN! Usamos tu script TicketChiquito
-        TicketChiquito scriptChiquito = chiquito.GetComponent<TicketChiquito>();
-        if (scriptChiquito != null)
+        // 2. Revisamos si hay pedidos guardados
+        if (PedidoMemoria.TicketsActivos.Count == 0)
         {
-            scriptChiquito.Configurar(indice, this);
+            // SI NO HAY PEDIDOS, APAGAMOS EL MARCO POR COMPLETO
+            if (marcoDelTicket != null) marcoDelTicket.SetActive(false);
+            return;
         }
-    }
 
-    public void IntercambiarTicket(int indiceClickeado)
-    {
-        foreach (Transform child in rielContenedor)
+        // 3. SI HAY PEDIDOS, ENCENDEMOS EL MARCO
+        if (marcoDelTicket != null) marcoDelTicket.SetActive(true);
+
+        // 4. Tomamos el último pedido y lo dibujamos
+        int ultimoIndice = PedidoMemoria.TicketsActivos.Count - 1;
+        GameObject ticketCreado = Instantiate(PedidoMemoria.TicketsActivos[ultimoIndice], lugarTicketGrande);
+
+        RectTransform rect = ticketCreado.GetComponent<RectTransform>();
+        if (rect != null)
         {
-            // Buscamos usando tu script TicketChiquito
-            TicketChiquito btn = child.GetComponent<TicketChiquito>();
-            if (btn != null && btn.miIndice == indiceClickeado)
-            {
-                Destroy(child.gameObject);
-                break;
-            }
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
-        MostrarEnGrande(indiceClickeado);
     }
 }

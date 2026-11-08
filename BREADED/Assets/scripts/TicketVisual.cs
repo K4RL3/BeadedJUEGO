@@ -3,37 +3,27 @@ using UnityEngine.UI;
 
 public class TicketVisual : MonoBehaviour
 {
-    public Image[] slotsIngredientes;
-
-    // Para llenarlo de golpe (Cocina)
+    // Esta función se llama desde el TicketRail
     public void Configurar(Sprite[] ingredientes)
     {
-        for (int i = 0; i < slotsIngredientes.Length; i++)
-        {
-            slotsIngredientes[i].sprite = null;
-            slotsIngredientes[i].color = new Color(1, 1, 1, 0);
-        }
+        Image[] slots = GetComponentsInChildren<Image>(true);
+        int indiceIngrediente = 0;
 
-        for (int i = 0; i < ingredientes.Length; i++)
+        foreach (Image slot in slots)
         {
-            if (i < slotsIngredientes.Length)
+            // Ignoramos el fondo del ticket, solo queremos los huecos
+            if (slot.gameObject != this.gameObject)
             {
-                slotsIngredientes[i].sprite = ingredientes[i];
-                slotsIngredientes[i].color = new Color(1, 1, 1, 1);
-            }
-        }
-    }
-
-    // Para llenarlo de a uno (Estación 2)
-    public void AgregarIcono(Sprite sprite)
-    {
-        for (int i = 0; i < slotsIngredientes.Length; i++)
-        {
-            if (slotsIngredientes[i].sprite == null)
-            {
-                slotsIngredientes[i].sprite = sprite;
-                slotsIngredientes[i].color = new Color(1, 1, 1, 1);
-                break;
+                if (indiceIngrediente < ingredientes.Length)
+                {
+                    slot.sprite = ingredientes[indiceIngrediente];
+                    slot.color = new Color(1, 1, 1, 1); // Prender
+                    indiceIngrediente++;
+                }
+                else
+                {
+                    slot.color = new Color(1, 1, 1, 0); // Apagar
+                }
             }
         }
     }

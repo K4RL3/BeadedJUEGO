@@ -8,20 +8,23 @@ public class ClienteEstacion2 : MonoBehaviour
 {
     [Header("UI del NPC")]
     public GameObject burbujaDialogo;
-    public Image[] todosLosIconosEnBurbuja;
+    public Image imagenEnBurbuja;
 
     [Header("Pedido")]
-    public int[] indicesDelPedido;
+    public GameObject prefabDeEsteTicket;
+    public Transform marcoTicketEstacion2;
     public string escenaCocina = "EstaciónArmado";
-    public TicketVisual ticketEnEstacion2;
 
     void Start()
     {
-        if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name)) return;
+        // 1. REVISAMOS SI ESTE NPC YA FUE ATENDIDO POR SU NOMBRE
+        if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
+        {
+            if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
+            return; // Si ya pidió, se detiene aquí y no dicta nada
+        }
 
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-        for (int i = 0; i < todosLosIconosEnBurbuja.Length; i++)
-            todosLosIconosEnBurbuja[i].gameObject.SetActive(false);
 
         StartCoroutine(DictarPedido());
     }
@@ -29,36 +32,56 @@ public class ClienteEstacion2 : MonoBehaviour
     IEnumerator DictarPedido()
     {
         yield return new WaitForSeconds(1f);
-        List<Sprite> spritesDeEstePedido = new List<Sprite>();
 
-        for (int i = 0; i < indicesDelPedido.Length; i++)
+        foreach (Transform child in marcoTicketEstacion2) Destroy(child.gameObject);
+
+        GameObject ticketEnEscena = Instantiate(prefabDeEsteTicket, marcoTicketEstacion2);
+
+        RectTransform rect = ticketEnEscena.GetComponent<RectTransform>();
+        if (rect != null)
         {
-            int indiceSprite = indicesDelPedido[i];
-            if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
 
-            if (indiceSprite < todosLosIconosEnBurbuja.Length)
+        Image[] ingredientesEnElTicket = ticketEnEscena.GetComponentsInChildren<Image>(true);
+        List<Image> frutasReales = new List<Image>();
+
+        foreach (Image img in ingredientesEnElTicket)
+        {
+            if (img.sprite != null && img.gameObject != ticketEnEscena)
             {
-                todosLosIconosEnBurbuja[indiceSprite].gameObject.SetActive(true);
-                Sprite sprite = todosLosIconosEnBurbuja[indiceSprite].sprite;
-                spritesDeEstePedido.Add(sprite);
-
-                if (ticketEnEstacion2 != null) ticketEnEstacion2.AgregarIcono(sprite);
+                frutasReales.Add(img);
+                img.gameObject.SetActive(false);
             }
+        }
+
+        for (int i = 0; i < frutasReales.Count; i++)
+        {
+            if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
+            if (imagenEnBurbuja != null)
+            {
+                imagenEnBurbuja.sprite = frutasReales[i].sprite;
+                imagenEnBurbuja.color = new Color(1, 1, 1, 1);
+            }
+
+            frutasReales[i].gameObject.SetActive(true);
 
             yield return new WaitForSeconds(1f);
 
             if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-            if (indiceSprite < todosLosIconosEnBurbuja.Length)
-                todosLosIconosEnBurbuja[indiceSprite].gameObject.SetActive(false);
+            if (imagenEnBurbuja != null) imagenEnBurbuja.color = new Color(1, 1, 1, 0);
 
             yield return new WaitForSeconds(0.3f);
         }
 
-        // GUARDAMOS EN PEDIDOMEMORIA
-        PedidoMemoria.PedidosActivos.Add(spritesDeEstePedido.ToArray());
-        PedidoMemoria.NpcsAtendidos.Add(gameObject.name);
+        // 2. GUARDAMOS EL PEDIDO Y MARCAMOS AL NPC COMO ATENDIDO
+        PedidoMemoria.TicketsActivos.Add(prefabDeEsteTicket);
+        PedidoMemoria.NpcsAtendidos.Add(gameObject.name); // <-- AQUÍ SE GUARDA SU NOMBRE
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene(escenaCocina);
     }
 }
