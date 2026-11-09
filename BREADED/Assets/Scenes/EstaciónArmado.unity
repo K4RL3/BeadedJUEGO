@@ -2349,8 +2349,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnerIngredientes
   tiempoDeDispensado: 1
   intervaloCaida: 0.15
-  alturaSpawnY: 1.2
-  distanciaCamaraZ: 1.71
+  puntoDeCaida: {fileID: 1063387846}
+  alturaSpawnY: 1.1
 --- !u!4 &1045055847
 Transform:
   m_ObjectHideFlags: 0
