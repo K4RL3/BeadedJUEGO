@@ -28,6 +28,7 @@ public class ControladorPedido : MonoBehaviour
 
     public void IrAEstacionPedido2()
     {
+        
         SceneManager.LoadScene(nombreEscenaPedido2);
     }
 }
