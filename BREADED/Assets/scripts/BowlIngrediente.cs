@@ -7,7 +7,7 @@ public class BowlIngrediente : MonoBehaviour
 
     void Start()
     {
-        spawner = FindFirstObjectByType<SpawnerIngredientes>();
+        spawner = FindAnyObjectByType<SpawnerIngredientes>();
     }
 
     void OnMouseDown()

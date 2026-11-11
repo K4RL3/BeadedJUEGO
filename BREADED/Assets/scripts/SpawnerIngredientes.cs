@@ -8,13 +8,17 @@ public class SpawnerIngredientes : MonoBehaviour
     public float tiempoDeDispensado = 1f;
     public float intervaloCaida = 0.1f;
 
-    [Header("Punto de Caída (Arrastra 'centro (1)' aquí)")]
-    public Transform puntoDeCaida; // <--- Arrastra tu objeto "centro (1)" al Inspector
-
-    [Header("Ajustes de Altura")]
-    public float alturaSpawnY = 2.5f; // Altura desde donde caen
+    [Header("Punto de Referencia (Arrastra 'centro (1)' aquí)")]
+    public Transform puntoDeCaida;
+    public float alturaMaxima = 4f; // Altura máxima si mueves el mouse muy arriba
 
     private GameObject prefabFrutaActual;
+    private Camera camara;
+
+    void Start()
+    {
+        camara = Camera.main;
+    }
 
     public void PrepararBowl(GameObject prefab)
     {
@@ -47,16 +51,22 @@ public class SpawnerIngredientes : MonoBehaviour
     {
         if (prefabFrutaActual == null || puntoDeCaida == null) return;
 
-        // 1. Tomamos la posición exacta de tu objeto "centro (1)"
-        Vector3 puntoSpawn = puntoDeCaida.position;
+        // 1. Obtenemos la posición del mouse en pantalla (de 0 a Screen.width y 0 a Screen.height)
+        Vector2 posMouse = Mouse.current.position.ReadValue();
 
-        // 2. Le sumamos la altura para que caiga desde arriba
-        puntoSpawn.y = alturaSpawnY;
+        // 2. Proyectamos esa posición a coordenadas del mundo. 
+        // Le pasamos la Z de tu 'centro (1)' para que respete la profundidad.
+        Vector3 posMundo = camara.ScreenToWorldPoint(new Vector3(posMouse.x, posMouse.y, Mathf.Abs(camara.transform.position.z - puntoDeCaida.position.z)));
 
-        // 3. Le damos un pequeño desvío aleatorio en X y Z para que no se apilen en una sola línea perfecta
-        float desvioX = Random.Range(-0.2f, 0.2f);
-        float desvioZ = Random.Range(-0.1f, 0.1f);
-        puntoSpawn += new Vector3(desvioX, 0, desvioZ);
+        // 3. Armamos la posición final:
+        // - X: Donde está el mouse
+        // - Y: La altura del mouse (limitada a alturaMaxima)
+        // - Z: La Z exacta de tu 'centro (1)'
+        float posX = posMundo.x;
+        float posY = Mathf.Clamp(posMundo.y, puntoDeCaida.position.y + 1f, alturaMaxima);
+        float posZ = puntoDeCaida.position.z;
+
+        Vector3 puntoSpawn = new Vector3(posX, posY, posZ);
 
         // 4. Instanciamos
         Quaternion rotacionAleatoria = Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
