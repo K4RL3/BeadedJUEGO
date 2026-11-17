@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor; // Para buscar en el proyecto
+#endif
 
 public class ClienteEstacion2 : MonoBehaviour
 {
@@ -17,15 +20,13 @@ public class ClienteEstacion2 : MonoBehaviour
 
     void Start()
     {
-        // 1. REVISAMOS SI ESTE NPC YA FUE ATENDIDO POR SU NOMBRE
         if (PedidoMemoria.NpcsAtendidos.Contains(gameObject.name))
         {
             if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-            return; // Si ya pidió, se detiene aquí y no dicta nada
+            return;
         }
 
         if (burbujaDialogo != null) burbujaDialogo.SetActive(false);
-
         StartCoroutine(DictarPedido());
     }
 
@@ -34,7 +35,6 @@ public class ClienteEstacion2 : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         foreach (Transform child in marcoTicketEstacion2) Destroy(child.gameObject);
-
         GameObject ticketEnEscena = Instantiate(prefabDeEsteTicket, marcoTicketEstacion2);
 
         RectTransform rect = ticketEnEscena.GetComponent<RectTransform>();
@@ -61,10 +61,25 @@ public class ClienteEstacion2 : MonoBehaviour
         for (int i = 0; i < frutasReales.Count; i++)
         {
             if (burbujaDialogo != null) burbujaDialogo.SetActive(true);
+
             if (imagenEnBurbuja != null)
             {
-                imagenEnBurbuja.sprite = frutasReales[i].sprite;
+                string nombreOriginal = frutasReales[i].sprite.name;
+                string nombreBurbuja = nombreOriginal + "_Burbuja";
+
+                Sprite spriteBurbuja = BuscarSpriteEnProyecto(nombreBurbuja);
+
+                if (spriteBurbuja != null)
+                {
+                    imagenEnBurbuja.sprite = spriteBurbuja;
+                }
+                else
+                {
+                    imagenEnBurbuja.sprite = frutasReales[i].sprite; // Fallback
+                }
+
                 imagenEnBurbuja.color = new Color(1, 1, 1, 1);
+                imagenEnBurbuja.preserveAspect = true;
             }
 
             frutasReales[i].gameObject.SetActive(true);
@@ -77,11 +92,31 @@ public class ClienteEstacion2 : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
         }
 
-        // 2. GUARDAMOS EL PEDIDO Y MARCAMOS AL NPC COMO ATENDIDO
         PedidoMemoria.TicketsActivos.Add(prefabDeEsteTicket);
-        PedidoMemoria.NpcsAtendidos.Add(gameObject.name); // <-- AQUÍ SE GUARDA SU NOMBRE
+        PedidoMemoria.NpcsAtendidos.Add(gameObject.name);
 
         yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene(escenaCocina);
+    }
+
+    // --- FUNCIÓN PARA BUSCAR EL SPRITE EN TU CARPETA EXACTA ---
+    private Sprite BuscarSpriteEnProyecto(string nombre)
+    {
+#if UNITY_EDITOR
+        // Busca todos los sprites (incluso si no están en Resources)
+        string[] guids = AssetDatabase.FindAssets("t:Sprite " + nombre);
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            // Verifica que esté en tu carpeta de Sprites > Ingredientes
+            if (path.Contains("Assets/Sprites/Ingredientes/") && path.EndsWith(nombre + ".png"))
+            {
+                return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            }
+        }
+#endif
+        return null;
     }
 }
