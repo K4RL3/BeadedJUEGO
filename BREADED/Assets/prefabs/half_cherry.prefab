@@ -154,4 +154,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b6aab311ff19d45adaa622cdd36941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IngredienteVolador
-  nombreIngrediente: Fresa
+  nombreIngrediente: half_cherry

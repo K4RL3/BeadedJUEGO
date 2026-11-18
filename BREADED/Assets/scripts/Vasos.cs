@@ -288,6 +288,12 @@ public class Vasos : MonoBehaviour
             vasoElegido.localRotation = Quaternion.identity;
             vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
 
+            ArrastrarVaso arrastrar = vasoElegido.GetComponent<ArrastrarVaso>();
+            if (arrastrar != null)
+            {
+                arrastrar.ActualizarPosicionBase();
+            }
+
             llegoAToppings = true;
             Debug.Log("¡Vaso llegó a la mesa de toppings!");
         }
