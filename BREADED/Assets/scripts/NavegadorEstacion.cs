@@ -1,11 +1,13 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class NavegadorEstacion : MonoBehaviour
 {
     [SerializeField] private Transform[] estaciones;
     public static int estacionInicial = 0;
+
+    // Índice de tu escena de Pedidos 1 (según tu Build Settings)
+    private int indiceEscenaPedidos1 = 2;
 
     [Header("Textos de los Botones")]
     public TextMeshProUGUI textoBotonAtras;
@@ -35,7 +37,11 @@ public class NavegadorEstacion : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("EstaciónPedidos1");
+            // Salimos a la escena de pedidos con transición
+            if (TransicionEscenasUI.Instance != null)
+            {
+                TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaPedidos1);
+            }
         }
     }
 

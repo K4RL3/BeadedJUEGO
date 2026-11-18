@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class BotonesPedidos : MonoBehaviour
 {
-    public string nombreEscenaCocina = "EstaciónArmado";
+    // Índice de tu escena de la cocina (según tu Build Settings)
+    private int indiceEscenaCocina = 4;
 
     [Header("Textos de los Botones")]
     public TextMeshProUGUI textoBotonAtras;
@@ -12,7 +12,6 @@ public class BotonesPedidos : MonoBehaviour
 
     void Start()
     {
-        // Al entrar a AtendiendoClientes, configuramos los textos
         if (textoBotonAtras != null) textoBotonAtras.text = "Volver";
         if (textoBotonAdelante != null) textoBotonAdelante.text = "Armar";
     }
@@ -20,11 +19,18 @@ public class BotonesPedidos : MonoBehaviour
     public void BotonAtras()
     {
         Debug.Log("Ya estamos en la primera estación");
+        // (Si quisieras volver al menú, usarías TransicionEscenasUI.Instance.DisolverSalida(0))
     }
 
     public void BotonAdelante()
     {
+        // Le decimos al Navegador que abra en la estación 0 (Mesa)
         NavegadorEstacion.estacionInicial = 0;
-        SceneManager.LoadScene(nombreEscenaCocina);
+
+        // Hacemos la transición hacia la cocina
+        if (TransicionEscenasUI.Instance != null)
+        {
+            TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaCocina);
+        }
     }
 }

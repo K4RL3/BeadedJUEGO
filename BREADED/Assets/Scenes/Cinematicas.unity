@@ -210,6 +210,7 @@ GameObject:
   - component: {fileID: 643199878}
   - component: {fileID: 643199877}
   - component: {fileID: 643199876}
+  - component: {fileID: 643199879}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -256,11 +257,11 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0}
     m_ColorMultiplier: 1
@@ -306,7 +307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -331,6 +332,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 643199874}
   m_CullTransparentMesh: 1
+--- !u!95 &643199879
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643199874}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c60c0efef61d5ea4f8f93291adae93cb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &691512821
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,8 +383,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29aba338b2a9fc141b35d690c9d99134, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ControladorIntro
-  nombrePrimeraEscena: Cinematicas
-  escenaJuego: "Estaci\xF3nPedidos1"
 --- !u!4 &691512823
 Transform:
   m_ObjectHideFlags: 0
@@ -377,6 +398,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &786339230
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 995.64703
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 513.6561
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.47423
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193383662585355696, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769943807950626762, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
+      propertyPath: m_Name
+      value: TransicionEscenasUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d02468eeff6c29746bf261351a10f0aa, type: 3}
 --- !u!1 &1483582174
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,7 +965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.5018867, g: 0.23011029, b: 0.23011029, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -921,3 +999,4 @@ SceneRoots:
   - {fileID: 1483582178}
   - {fileID: 110823977}
   - {fileID: 691512823}
+  - {fileID: 786339230}

@@ -4,14 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    // Al quitarle "public", ya no aparece en el Inspector.
-    // Los nombres de las escenas ahora están fijos aquí en el código.
-    private string nombrePrimeraEscena = "Cinematicas";
-    private string escenaJuego = "EstaciónPedidos1";
+    private int indiceEscenaCinematicas = 1; // Según tu Build Settings
+    private int indiceEscenaJuego = 2;       // EstaciónPedidos1
 
     void Start()
     {
-        // Si estamos en la escena de Cinematicas, iniciamos el temporizador automático
         if (SceneManager.GetActiveScene().name == "Cinematicas")
         {
             StartCoroutine(TemporizadorCinematica());
@@ -20,29 +17,44 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator TemporizadorCinematica()
     {
-        yield return new WaitForSeconds(5f); // Espera los 5 segundos
-        IrAlJuego(); // Luego pasa al juego
+        yield return new WaitForSeconds(5f);
+        IrAlJuego();
     }
 
     public void BotonJugar()
     {
-        Debug.Log("Cargando: " + nombrePrimeraEscena);
         if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
 
-        SceneManager.LoadScene(nombrePrimeraEscena);
+        // Usa la transición hacia Cinemáticas con el efecto configurado
+        if (TransicionEscenasUI.Instance != null)
+        {
+            TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaCinematicas);
+        }
+        else
+        {
+            SceneManager.LoadScene(indiceEscenaCinematicas);
+        }
     }
 
     public void BotonSaltarCinematica()
     {
         if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
 
-        StopAllCoroutines(); // Detiene el temporizador de 5 segundos
-        IrAlJuego();         // Va al juego de inmediato
+        StopAllCoroutines();
+        IrAlJuego();
     }
 
     void IrAlJuego()
     {
-        SceneManager.LoadScene(escenaJuego);
+        // Usa la transición hacia el Juego
+        if (TransicionEscenasUI.Instance != null)
+        {
+            TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaJuego);
+        }
+        else
+        {
+            SceneManager.LoadScene(indiceEscenaJuego);
+        }
     }
 
     public void BotonSalir()
