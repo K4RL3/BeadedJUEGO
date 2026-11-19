@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TransicionEscenasUI
   disolverCanvasGroup: {fileID: 8978737765742240724}
-  tiempoDisolverEntrada: 1
+  tiempoDisolverEntrada: 2
   tiempoDisolverSalida: 2
 --- !u!1 &7516371373217150292
 GameObject:
