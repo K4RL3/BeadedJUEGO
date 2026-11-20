@@ -3,7 +3,10 @@ using UnityEngine.InputSystem;
 
 public class HoverBowl : MonoBehaviour
 {
-    // Variables privadas: NO aparecen en el Inspector
+    [Header("Configuración del Audio")]
+    public bool esBotellaOJarabe = false; // <-- La única casilla pública
+
+    // Variables privadas: Ya no se ven en el Inspector
     private float escalaHover = 1.1f;
     private float alturaHover = 0.2f;
     private float velocidadTransicion = 10f;
@@ -19,10 +22,8 @@ public class HoverBowl : MonoBehaviour
     void Start()
     {
         camara = Camera.main;
-
         escalaOriginal = transform.localScale;
         posicionOriginal = transform.localPosition;
-
         escalaObjetivo = escalaOriginal;
         posicionObjetivo = posicionOriginal;
     }
@@ -41,11 +42,18 @@ public class HoverBowl : MonoBehaviour
                     escalaObjetivo = escalaOriginal * escalaHover;
                     posicionObjetivo = posicionOriginal + new Vector3(0, alturaHover, 0);
 
-                    // 🎵 Usamos el ManejadorAudio global.
-                    // Si tienes un sonido de Hover, usa PlayHover(). 
-                    // Si no, puedes usar PlaySeleccion() para que suene un clic suave.
+                    // 🎵 REPRODUCIR EL AUDIO CORRECTO
                     if (ManejadorAudio.Instance != null)
-                        ManejadorAudio.Instance.PlaySeleccion();
+                    {
+                        if (esBotellaOJarabe)
+                        {
+                            ManejadorAudio.Instance.PlayHoverJarabes();
+                        }
+                        else
+                        {
+                            ManejadorAudio.Instance.PlayHover();
+                        }
+                    }
                 }
             }
             else

@@ -2715,6 +2715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!1 &1485394219
 GameObject:
   m_ObjectHideFlags: 0
@@ -2873,6 +2874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!1 &1536985906
 GameObject:
   m_ObjectHideFlags: 0
@@ -4110,6 +4112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!1001 &3069135711502470942
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4161,6 +4164,10 @@ PrefabInstance:
     - target: {fileID: 6113100219967539001, guid: 3f4d634f04eadf14b986c2228bf9cccc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6144736069230634469, guid: 3f4d634f04eadf14b986c2228bf9cccc, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4302,6 +4309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!114 &3603336755454327850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4314,6 +4322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &3603336755454327851
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4346,6 +4355,10 @@ PrefabInstance:
     - target: {fileID: 615881089836353386, guid: b1febcd34868efc478a18107ae8d93d0, type: 3}
       propertyPath: m_Name
       value: blueberry_bowl
+      objectReference: {fileID: 0}
+    - target: {fileID: 1400640746361159301, guid: b1febcd34868efc478a18107ae8d93d0, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7499913360116307970, guid: b1febcd34868efc478a18107ae8d93d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4419,6 +4432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &7310659165176009455
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4457,6 +4471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &7745072959484007913
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4563,6 +4578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &7877564119396607992
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4631,6 +4647,10 @@ PrefabInstance:
     - target: {fileID: 1238037468935724738, guid: f2eb91ea084941c479dcd51ed18ed769, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3748852857574680818, guid: f2eb91ea084941c479dcd51ed18ed769, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6368851170830632046, guid: f2eb91ea084941c479dcd51ed18ed769, type: 3}
       propertyPath: m_Name
@@ -4752,6 +4772,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: half_cherry_bowl
       objectReference: {fileID: 0}
+    - target: {fileID: 5586353629902093955, guid: f299548aa22ddee4f98eba7bf31ab1c5, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7922916216488773127, guid: f299548aa22ddee4f98eba7bf31ab1c5, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.080999374
@@ -4849,6 +4873,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: half_strwaberry_bowl
       objectReference: {fileID: 0}
+    - target: {fileID: 6819567923027224575, guid: 55830a34263c3af47aefce0e1e0c69cf, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4870,6 +4898,10 @@ PrefabInstance:
     - target: {fileID: 45842261845293794, guid: 432edf2736475c1449072080cd8e75dd, type: 3}
       propertyPath: m_Name
       value: banana_fill
+      objectReference: {fileID: 0}
+    - target: {fileID: 797838165486635490, guid: 432edf2736475c1449072080cd8e75dd, type: 3}
+      propertyPath: esBotellaOJarabe
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1827288310746042500, guid: 432edf2736475c1449072080cd8e75dd, type: 3}
       propertyPath: m_Size.x
@@ -5029,6 +5061,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &9028615551055036505
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5067,6 +5100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
 --- !u!65 &9220053966812878818
 BoxCollider:
   m_ObjectHideFlags: 0
