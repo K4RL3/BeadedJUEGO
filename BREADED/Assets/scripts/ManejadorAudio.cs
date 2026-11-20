@@ -7,12 +7,22 @@ public class ManejadorAudio : MonoBehaviour
     public AudioSource musicaSource;
     public AudioSource sfxSource;
 
+    [Header("Música")]
     public AudioClip musicaFondo;
+
+    [Header("Efectos de Interfaz")]
     public AudioClip sonidoHover;
     public AudioClip sonidoSeleccion;
+    public AudioClip sonidoBoton;
+
+    [Header("Efectos de Juego")]
     public AudioClip sonidoCrecimiento;
     public AudioClip sonidoCaidaVaso;
-    public AudioClip sonidoBoton;
+
+    // --- NUEVOS SONIDOS ---
+    [Header("Efectos de Ingredientes")]
+    public AudioClip sonidoHoverJarabes;    // Para botellas/sifones
+    public AudioClip sonidoCaidaFruta;      // Cuando cae la fruta al vaso
 
     void Awake()
     {
@@ -37,28 +47,21 @@ public class ManejadorAudio : MonoBehaviour
         }
     }
 
-    public void PlayHover()
+    // --- TUS FUNCIONES EXISTENTES ---
+    public void PlayHover() { if (sonidoHover != null) sfxSource.PlayOneShot(sonidoHover); }
+    public void PlaySeleccion() { if (sonidoSeleccion != null) sfxSource.PlayOneShot(sonidoSeleccion); }
+    public void PlayCrecimiento() { if (sonidoCrecimiento != null) sfxSource.PlayOneShot(sonidoCrecimiento); }
+    public void PlayCaidaVaso() { if (sonidoCaidaVaso != null) sfxSource.PlayOneShot(sonidoCaidaVaso); }
+    public void PlayBoton() { if (sonidoBoton != null) sfxSource.PlayOneShot(sonidoBoton); }
+
+    // --- NUEVAS FUNCIONES ---
+    public void PlayHoverJarabes()
     {
-        if (sonidoHover != null) sfxSource.PlayOneShot(sonidoHover);
+        if (sonidoHoverJarabes != null) sfxSource.PlayOneShot(sonidoHoverJarabes);
     }
 
-    public void PlaySeleccion()
+    public void PlayCaidaFruta()
     {
-        if (sonidoSeleccion != null) sfxSource.PlayOneShot(sonidoSeleccion);
-    }
-
-    public void PlayCrecimiento()
-    {
-        if (sonidoCrecimiento != null) sfxSource.PlayOneShot(sonidoCrecimiento);
-    }
-
-    public void PlayCaidaVaso()
-    {
-        if (sonidoCaidaVaso != null) sfxSource.PlayOneShot(sonidoCaidaVaso);
-    }
-
-    public void PlayBoton()
-    {
-        if (sonidoBoton != null) sfxSource.PlayOneShot(sonidoBoton);
+        if (sonidoCaidaFruta != null) sfxSource.PlayOneShot(sonidoCaidaFruta);
     }
 }
