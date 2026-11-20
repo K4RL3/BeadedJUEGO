@@ -18,6 +18,23 @@ public class IngredienteVolador : MonoBehaviour
         Debug.Log("Ingrediente asegurado en el vaso.");
     }
 
+    private void LimpiarIngredientesDeVaso(Transform vaso)
+    {
+        if (vaso == null) return;
+
+        for (int i = vaso.childCount - 1; i >= 0; i--)
+        {
+            Transform hijo = vaso.GetChild(i);
+
+            // Si el hijo es un ingrediente o tiene IngredienteVolador, lo destruimos
+            if (hijo.GetComponentInChildren<IngredienteVolador>(true) != null ||
+                hijo.GetComponent<IngredienteVolador>() != null)
+            {
+                Destroy(hijo.gameObject);
+            }
+        }
+    }
+
     void AutoDestruir()
     {
         if (!estaAtrapado) Destroy(gameObject);
