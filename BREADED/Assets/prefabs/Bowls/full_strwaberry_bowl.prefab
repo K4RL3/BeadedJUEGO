@@ -99,6 +99,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8375072646124418438}
+  - component: {fileID: 3670233075551890407}
+  - component: {fileID: 5529620651684776538}
+  - component: {fileID: 3944703677051815419}
   m_Layer: 0
   m_Name: full_strwaberry_bowl
   m_TagString: Untagged
@@ -123,6 +126,54 @@ Transform:
   - {fileID: 6198943215161904809}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3670233075551890407
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2543433008879678324}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.37444878, y: 0.30096206, z: 0.36552322}
+  m_Center: {x: 0, y: 0.14207049, z: 0}
+--- !u!114 &5529620651684776538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2543433008879678324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
+--- !u!114 &3944703677051815419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2543433008879678324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf6ab8ffecff0e64daca89cf117acade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BowlIngrediente
+  prefabFruta: {fileID: 2224783361628266601, guid: 5f097548ca6cee8459ef984e0134ebd2, type: 3}
+  ponerSoloUno: 1
 --- !u!1001 &5876541653895244098
 PrefabInstance:
   m_ObjectHideFlags: 0

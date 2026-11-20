@@ -3,69 +3,149 @@ using UnityEngine.InputSystem;
 
 public class ArrastrarVaso : MonoBehaviour
 {
+    private enum EjeArrastre
+    {
+        Ninguno,
+        EjeX,
+        EjeZ
+    }
+
+    public bool esVasoSeleccionado = false;
+    public bool ocultarNoSeleccionadosAlAvanzar = false;
+
+    [HideInInspector] public bool procesadoPorBoton = false;
+
     private Camera camara;
+    private NavegadorEstacion navegador;
+
     private bool estaSiendoArrastrado = false;
     private Vector3 posicionOriginal;
+    private Vector3 posicionInicioArrastre;
+    private Vector3 offsetArrastre;
+    private float alturaPlanoArrastre;
+    private EjeArrastre ejeActual = EjeArrastre.Ninguno;
+
+    private float offsetAlturaLevantado = 0.5f;
+    private float velocidadMovimiento = 5f;
 
     private bool estaMoviendose = false;
     private Vector3 destinoMovimiento;
     private Transform nuevoPadreDestino;
-    private float velocidadMovimiento = 5f;
-
-    public float alturaMinimaY = 0.5f;
-
-    [HideInInspector] public bool procesadoPorBoton = false;
-
     private Vector3 escalaOriginalVaso;
 
     void Start()
     {
         camara = Camera.main;
+        navegador = FindAnyObjectByType<NavegadorEstacion>();
         posicionOriginal = transform.position;
-        escalaOriginalVaso = transform.localScale; // Guardamos la escala original
+        escalaOriginalVaso = transform.localScale;
+    }
+
+    public void SeleccionarEsteVaso()
+    {
+        ArrastrarVaso[] todosLosVasos = FindObjectsByType<ArrastrarVaso>();
+        for (int i = 0; i < todosLosVasos.Length; i++)
+        {
+            todosLosVasos[i].esVasoSeleccionado = (todosLosVasos[i] == this);
+        }
+    }
+
+    private EjeArrastre ObtenerEjePorEstacion(int estacion)
+    {
+        switch (estacion)
+        {
+            case 1:
+                return EjeArrastre.EjeX;
+            case 2:
+                return EjeArrastre.EjeZ;
+            case 0:
+            default:
+                return EjeArrastre.Ninguno;
+        }
     }
 
     void Update()
     {
-        // 1. Lógica de Arrastre con Mouse
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current == null) return;
+
+        // 1. Iniciar arrastre con clic izquierdo
+        if (Mouse.current.leftButton.wasPressedThisFrame && !estaMoviendose)
         {
             Ray rayo = camara.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(rayo, out RaycastHit golpe, 100f))
             {
                 if (golpe.transform == transform || golpe.transform.IsChildOf(transform))
                 {
-                    NavegadorEstacion nav = FindAnyObjectByType<NavegadorEstacion>();
-                    if (nav != null && nav.ObtenerEstacionActual() != 0)
-                    {
-                        estaSiendoArrastrado = true;
-                        transform.position += Vector3.up * 0.5f;
-                        procesadoPorBoton = false;
+                    int estacionIdx = navegador != null ? navegador.ObtenerEstacionActual() : 0;
+                    EjeArrastre ejePermitido = ObtenerEjePorEstacion(estacionIdx);
 
+                    if (ejePermitido != EjeArrastre.Ninguno)
+                    {
+                        SeleccionarEsteVaso();
+                        ejeActual = ejePermitido;
+
+                        estaSiendoArrastrado = true;
+                        procesadoPorBoton = false;
                         transform.SetParent(null);
+
+                        transform.position += Vector3.up * offsetAlturaLevantado;
+                        posicionInicioArrastre = transform.position;
+                        alturaPlanoArrastre = transform.position.y;
+
+                        Plane planoHorizontal = new Plane(Vector3.up, new Vector3(0f, alturaPlanoArrastre, 0f));
+                        if (planoHorizontal.Raycast(rayo, out float distancia))
+                        {
+                            Vector3 puntoEnPlano = rayo.GetPoint(distancia);
+                            offsetArrastre = transform.position - puntoEnPlano;
+                            offsetArrastre.y = 0f;
+                        }
+                        else
+                        {
+                            offsetArrastre = Vector3.zero;
+                        }
                     }
                 }
             }
         }
 
-        // Soltar el mouse
+        // 2. Arrastre en el eje de la estación actual
+        if (estaSiendoArrastrado)
+        {
+            Ray rayoHorizontal = camara.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Plane planoHorizontal = new Plane(Vector3.up, new Vector3(0f, alturaPlanoArrastre, 0f));
+
+            if (planoHorizontal.Raycast(rayoHorizontal, out float distHor))
+            {
+                Vector3 puntoEnPlano = rayoHorizontal.GetPoint(distHor) + offsetArrastre;
+                Vector3 nuevaPos = posicionInicioArrastre;
+
+                if (ejeActual == EjeArrastre.EjeX)
+                {
+                    nuevaPos.x = puntoEnPlano.x;
+                }
+                else if (ejeActual == EjeArrastre.EjeZ)
+                {
+                    nuevaPos.z = puntoEnPlano.z;
+                }
+
+                nuevaPos.y = alturaPlanoArrastre;
+                transform.position = nuevaPos;
+            }
+        }
+
+        // 3. Soltar mouse
         if (Mouse.current.leftButton.wasReleasedThisFrame && estaSiendoArrastrado)
         {
             estaSiendoArrastrado = false;
-            if (!procesadoPorBoton) RegresarAlInicio();
+            ejeActual = EjeArrastre.Ninguno;
+
+            if (!procesadoPorBoton)
+            {
+                RegresarAlInicio();
+            }
         }
 
-        // Mover con el mouse
-        if (estaSiendoArrastrado)
-        {
-            Vector2 posMouse = Mouse.current.position.ReadValue();
-            Vector3 posMundo = camara.ScreenToWorldPoint(new Vector3(posMouse.x, posMouse.y, Mathf.Abs(camara.transform.position.z - posicionOriginal.z)));
-
-            float nuevaY = Mathf.Max(posMundo.y, alturaMinimaY);
-            transform.position = new Vector3(posMundo.x, nuevaY, posicionOriginal.z);
-        }
-
-        // 2. Lógica de Movimiento Recto
+        // 4. Movimiento recto hacia la estación (palomita verde)
         if (estaMoviendose)
         {
             transform.position = Vector3.MoveTowards(
@@ -79,20 +159,15 @@ public class ArrastrarVaso : MonoBehaviour
                 transform.position = destinoMovimiento;
                 estaMoviendose = false;
 
-                // ¡AQUÍ ESTÁ EL TRUCO PARA QUE NO DESAPAREZCA!
                 if (nuevoPadreDestino != null)
                 {
                     transform.SetParent(nuevoPadreDestino);
-
-                    // En lugar de localPosition = 0, forzamos la posición del mundo exacta
                     transform.position = nuevoPadreDestino.position;
-
-                    // Restauramos su escala para que no se deforme
                     transform.localScale = escalaOriginalVaso;
                 }
 
-                posicionOriginal = destinoMovimiento;
-                Debug.Log("Vaso llegó a su destino");
+                posicionOriginal = transform.position;
+                Debug.Log("Vaso llegó a su destino: " + gameObject.name);
             }
         }
     }
@@ -107,18 +182,26 @@ public class ArrastrarVaso : MonoBehaviour
 
     public void MoverAEstacion(Transform nuevoWorkSpot)
     {
+        if (!esVasoSeleccionado)
+        {
+            if (ocultarNoSeleccionadosAlAvanzar)
+            {
+                gameObject.SetActive(false);
+            }
+            return;
+        }
+
         procesadoPorBoton = true;
         estaSiendoArrastrado = false;
+        ejeActual = EjeArrastre.Ninguno;
         estaMoviendose = true;
 
         nuevoPadreDestino = nuevoWorkSpot;
-
-        // Guardamos la posición del WorkSpot antes de que el vaso se mueva
         destinoMovimiento = nuevoWorkSpot.position;
 
         transform.SetParent(null);
     }
-    // NUEVA FUNCIÓN: Para decirle al vaso cuál es su nuevo hogar
+
     public void ActualizarPosicionBase()
     {
         posicionOriginal = transform.position;

@@ -3,6 +3,7 @@ using UnityEngine;
 public class BowlIngrediente : MonoBehaviour
 {
     public GameObject prefabFruta;
+    public bool ponerSoloUno = false;
     private SpawnerIngredientes spawner;
 
     void Start()
@@ -12,7 +13,6 @@ public class BowlIngrediente : MonoBehaviour
 
     void OnMouseDown()
     {
-        // Al presionar, solo "preparamos" la fruta
         if (spawner != null && prefabFruta != null)
         {
             spawner.PrepararBowl(prefabFruta);
@@ -21,10 +21,12 @@ public class BowlIngrediente : MonoBehaviour
 
     void OnMouseUp()
     {
-        // Al soltar, disparamos la lluvia de frutas
         if (spawner != null)
         {
-            spawner.DispararLluviaDeFrutas();
+            if (ponerSoloUno)
+                spawner.DispararUnoSolo();
+            else
+                spawner.DispararLluviaDeFrutas();
         }
     }
 }

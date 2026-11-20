@@ -27,13 +27,23 @@ public class Vasos : MonoBehaviour
     bool terminocrecimiento;
     bool llegoAToppings;
     bool vasoEsChico;
+
     float escalaOriginalChico;
     float escalaOriginalGrande;
     float escalaOriginalElegida;
+
+    Vector3 posInicialChico;
+    Vector3 posInicialGrande;
+    Quaternion rotInicialChico;
+    Quaternion rotInicialGrande;
+    Transform padreInicialChico;
+    Transform padreInicialGrande;
+
     Vector3 posicionOriginalElegida;
     float tiempoCrecimiento;
 
     GameObject reemplazoActual;
+    GameObject vasoSpawneadoActual;
     Vector3 posicionDestinoReemplazo;
     bool reemplazoCayendo;
 
@@ -42,10 +52,22 @@ public class Vasos : MonoBehaviour
 
     void Start()
     {
-        escalaOriginalChico = vasoChico.localScale.x;
-        escalaOriginalGrande = vasoGrande.localScale.x;
+        if (vasoChico != null)
+        {
+            escalaOriginalChico = vasoChico.localScale.x;
+            posInicialChico = vasoChico.position;
+            rotInicialChico = vasoChico.rotation;
+            padreInicialChico = vasoChico.parent;
+        }
 
-        // Si venimos de la cocina y ya hay un vaso elegido, lo restauramos
+        if (vasoGrande != null)
+        {
+            escalaOriginalGrande = vasoGrande.localScale.x;
+            posInicialGrande = vasoGrande.position;
+            rotInicialGrande = vasoGrande.rotation;
+            padreInicialGrande = vasoGrande.parent;
+        }
+
         if (vasoYaElegido)
         {
             SpawnearVasoGuardado();
@@ -54,8 +76,16 @@ public class Vasos : MonoBehaviour
 
     void SpawnearVasoGuardado()
     {
+        if (vasoSpawneadoActual != null)
+        {
+            Destroy(vasoSpawneadoActual);
+        }
+
         GameObject prefab = eraChico ? prefabVasoChico : prefabVasoGrande;
+        if (prefab == null || workSpot_Toppings == null) return;
+
         GameObject vaso = Instantiate(prefab, workSpot_Toppings.position, workSpot_Toppings.rotation);
+        vasoSpawneadoActual = vaso;
 
         float escala = eraChico ? escalaOriginalChico : escalaOriginalGrande;
 
@@ -64,7 +94,6 @@ public class Vasos : MonoBehaviour
         vaso.transform.localRotation = Quaternion.identity;
         vaso.transform.localScale = Vector3.one * escala;
 
-        // Bloqueamos la selección porque ya hay un vaso en la mesa
         yaEligio = true;
         terminocrecimiento = true;
         llegoAToppings = true;
@@ -72,13 +101,11 @@ public class Vasos : MonoBehaviour
 
     void Update()
     {
-        // SI NO HAY VASO ELEGIDO, PERMITIMOS HOVER Y CLIC
         if (!yaEligio)
         {
             DetectarHover();
             DetectarClick();
         }
-        // SI YA SE ELIGIÓ, SE MUEVE
         else if (!terminocrecimiento)
         {
             Crecer();
@@ -92,13 +119,16 @@ public class Vasos : MonoBehaviour
 
     void DetectarHover()
     {
+        if (Mouse.current == null || Camera.main == null) return;
+
         Ray rayo = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(rayo, out RaycastHit golpe, 100f))
         {
-            // Usamos IsChildOf para detectar si tocamos el vaso o alguno de sus hijos (como el Mesh Collider)
-            bool tocoChico = golpe.transform == vasoChico || golpe.transform.IsChildOf(vasoChico);
-            bool tocoGrande = golpe.transform == vasoGrande || golpe.transform.IsChildOf(vasoGrande);
+            bool tocoChico = vasoChico != null && vasoChico.gameObject.activeInHierarchy &&
+                             (golpe.transform == vasoChico || golpe.transform.IsChildOf(vasoChico));
+            bool tocoGrande = vasoGrande != null && vasoGrande.gameObject.activeInHierarchy &&
+                              (golpe.transform == vasoGrande || golpe.transform.IsChildOf(vasoGrande));
 
             if (tocoChico)
             {
@@ -107,7 +137,8 @@ public class Vasos : MonoBehaviour
                 ultimoHover = vasoChico;
 
                 vasoChico.localScale = Vector3.one * (escalaOriginalChico * 1.1f);
-                vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
+                if (vasoGrande != null)
+                    vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
             }
             else if (tocoGrande)
             {
@@ -116,43 +147,39 @@ public class Vasos : MonoBehaviour
                 ultimoHover = vasoGrande;
 
                 vasoGrande.localScale = Vector3.one * (escalaOriginalGrande * 1.1f);
-                vasoChico.localScale = Vector3.one * escalaOriginalChico;
+                if (vasoChico != null)
+                    vasoChico.localScale = Vector3.one * escalaOriginalChico;
             }
             else
             {
                 ultimoHover = null;
-                vasoChico.localScale = Vector3.one * escalaOriginalChico;
-                vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
+                if (vasoChico != null) vasoChico.localScale = Vector3.one * escalaOriginalChico;
+                if (vasoGrande != null) vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
             }
         }
     }
 
     void DetectarClick()
     {
-        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+        if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame || Camera.main == null)
+            return;
 
         Ray rayo = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(rayo, out RaycastHit golpe, 100f))
         {
-            bool tocoChico = golpe.transform == vasoChico || golpe.transform.IsChildOf(vasoChico);
-            bool tocoGrande = golpe.transform == vasoGrande || golpe.transform.IsChildOf(vasoGrande);
+            bool tocoChico = vasoChico != null && vasoChico.gameObject.activeInHierarchy &&
+                             (golpe.transform == vasoChico || golpe.transform.IsChildOf(vasoChico));
+            bool tocoGrande = vasoGrande != null && vasoGrande.gameObject.activeInHierarchy &&
+                              (golpe.transform == vasoGrande || golpe.transform.IsChildOf(vasoGrande));
 
             if (tocoChico)
             {
                 vasoElegido = vasoChico;
                 vasoEsChico = true;
                 escalaOriginalElegida = escalaOriginalChico;
-                posicionOriginalElegida = vasoChico.position;
-                yaEligio = true;
-                tiempoCrecimiento = 0f;
-
-                vasoYaElegido = true;
-                eraChico = true;
-
-                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlaySeleccion();
-                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCrecimiento();
-
+                posicionOriginalElegida = posInicialChico;
+                IniciarSeleccion();
                 Debug.Log("Elegiste el vaso CHICO");
             }
             else if (tocoGrande)
@@ -160,23 +187,42 @@ public class Vasos : MonoBehaviour
                 vasoElegido = vasoGrande;
                 vasoEsChico = false;
                 escalaOriginalElegida = escalaOriginalGrande;
-                posicionOriginalElegida = vasoGrande.position;
-                yaEligio = true;
-                tiempoCrecimiento = 0f;
-
-                vasoYaElegido = true;
-                eraChico = false;
-
-                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlaySeleccion();
-                if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCrecimiento();
-
+                posicionOriginalElegida = posInicialGrande;
+                IniciarSeleccion();
                 Debug.Log("Elegiste el vaso GRANDE");
             }
         }
     }
 
+    void IniciarSeleccion()
+    {
+        tiempoDeViaje = 0f;
+        tiempoCrecimiento = 0f;
+        yaEligio = true;
+        terminocrecimiento = false;
+        llegoAToppings = false;
+
+        vasoYaElegido = true;
+        eraChico = vasoEsChico;
+
+        ArrastrarVaso arr = vasoElegido != null ? vasoElegido.GetComponent<ArrastrarVaso>() : null;
+        if (arr != null) arr.SeleccionarEsteVaso();
+
+        if (ManejadorAudio.Instance != null)
+        {
+            ManejadorAudio.Instance.PlaySeleccion();
+            ManejadorAudio.Instance.PlayCrecimiento();
+        }
+    }
+
     void Crecer()
     {
+        if (vasoElegido == null)
+        {
+            terminocrecimiento = true;
+            return;
+        }
+
         tiempoCrecimiento += Time.deltaTime;
         float t = tiempoCrecimiento / 0.3f;
 
@@ -196,6 +242,7 @@ public class Vasos : MonoBehaviour
     void SpawnReplace()
     {
         GameObject prefab = vasoEsChico ? prefabVasoChico : prefabVasoGrande;
+        if (prefab == null) return;
 
         Vector3 spawnPos = posicionOriginalElegida + Vector3.up * 3f;
         reemplazoActual = Instantiate(prefab, spawnPos, Quaternion.identity);
@@ -232,6 +279,12 @@ public class Vasos : MonoBehaviour
 
     void MoverAToppingsCurva()
     {
+        if (vasoElegido == null || workSpot_Toppings == null)
+        {
+            llegoAToppings = true;
+            return;
+        }
+
         if (puntoControl1 == null && puntoControl2 == null)
         {
             MoverEnLineaRecta(workSpot_Toppings.position);
@@ -239,7 +292,7 @@ public class Vasos : MonoBehaviour
         }
 
         float distanciaTotal = Vector3.Distance(posicionOriginalElegida, workSpot_Toppings.position);
-        duracionViaje = distanciaTotal / velocidadMovimiento;
+        duracionViaje = Mathf.Max(0.01f, distanciaTotal / velocidadMovimiento);
 
         tiempoDeViaje += Time.deltaTime;
         float t = tiempoDeViaje / duracionViaje;
@@ -272,6 +325,12 @@ public class Vasos : MonoBehaviour
 
     void MoverEnLineaRecta(Vector3 destino)
     {
+        if (vasoElegido == null)
+        {
+            llegoAToppings = true;
+            return;
+        }
+
         vasoElegido.position = Vector3.MoveTowards(
             vasoElegido.position,
             destino,
@@ -291,11 +350,96 @@ public class Vasos : MonoBehaviour
             ArrastrarVaso arrastrar = vasoElegido.GetComponent<ArrastrarVaso>();
             if (arrastrar != null)
             {
+                arrastrar.SeleccionarEsteVaso();
                 arrastrar.ActualizarPosicionBase();
             }
 
             llegoAToppings = true;
             Debug.Log("¡Vaso llegó a la mesa de toppings!");
         }
+    }
+
+    private void LimpiarIngredientesDeVaso(Transform vaso)
+    {
+        if (vaso == null) return;
+
+        for (int i = vaso.childCount - 1; i >= 0; i--)
+        {
+            Transform hijo = vaso.GetChild(i);
+
+            if (hijo.GetComponentInChildren<IngredienteVolador>(true) != null ||
+                hijo.GetComponent<IngredienteVolador>() != null)
+            {
+                Destroy(hijo.gameObject);
+            }
+        }
+    }
+
+    public void EliminarVasoActual()
+    {
+        if (vasoSpawneadoActual != null)
+        {
+            Destroy(vasoSpawneadoActual);
+            vasoSpawneadoActual = null;
+        }
+
+        if (reemplazoActual != null)
+        {
+            Destroy(reemplazoActual);
+            reemplazoActual = null;
+        }
+
+        if (workSpot_Toppings != null)
+        {
+            for (int i = workSpot_Toppings.childCount - 1; i >= 0; i--)
+            {
+                Transform hijo = workSpot_Toppings.GetChild(i);
+                if (hijo != vasoChico && hijo != vasoGrande)
+                {
+                    Destroy(hijo.gameObject);
+                }
+            }
+        }
+
+        if (vasoElegido != null && vasoElegido != vasoChico && vasoElegido != vasoGrande)
+        {
+            Destroy(vasoElegido.gameObject);
+        }
+
+        // <-- AQUÍ VAN ESTAS DOS LÍNEAS:
+        LimpiarIngredientesDeVaso(vasoChico);
+        LimpiarIngredientesDeVaso(vasoGrande);
+
+        if (vasoChico != null)
+        {
+            vasoChico.gameObject.SetActive(true);
+            vasoChico.SetParent(padreInicialChico);
+            vasoChico.position = posInicialChico;
+            vasoChico.rotation = rotInicialChico;
+            vasoChico.localScale = Vector3.one * escalaOriginalChico;
+        }
+
+        if (vasoGrande != null)
+        {
+            vasoGrande.gameObject.SetActive(true);
+            vasoGrande.SetParent(padreInicialGrande);
+            vasoGrande.position = posInicialGrande;
+            vasoGrande.rotation = rotInicialGrande;
+            vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
+        }
+
+        vasoElegido = null;
+        ultimoHover = null;
+        yaEligio = false;
+        terminocrecimiento = false;
+        llegoAToppings = false;
+        reemplazoCayendo = false;
+        tiempoCrecimiento = 0f;
+        tiempoDeViaje = 0f;
+
+        vasoYaElegido = false;
+        eraChico = false;
+
+        Debug.Log("Vasos restaurados. Ya puedes volver a elegir el vaso grande o el chico.");
     }
 }

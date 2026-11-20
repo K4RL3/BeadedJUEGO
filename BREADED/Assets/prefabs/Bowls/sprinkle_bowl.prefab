@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 762363868671915694}
   - component: {fileID: 3170583788017820256}
   m_Layer: 0
-  m_Name: sprinkle_bowl
+  m_Name: sprinkle_fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,6 +99,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 100626479106086989}
+  - component: {fileID: 5402312063897459926}
+  - component: {fileID: 1969710525056606748}
   m_Layer: 0
   m_Name: sprinkle_bowl
   m_TagString: Untagged
@@ -123,6 +125,40 @@ Transform:
   - {fileID: 428569268976720651}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5402312063897459926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7627422905222583296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
+--- !u!65 &1969710525056606748
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7627422905222583296}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.36795777, y: 0.17027795, z: 0.36595905}
+  m_Center: {x: 0, y: 0.07745099, z: 0}
 --- !u!1001 &3924991727675990537
 PrefabInstance:
   m_ObjectHideFlags: 0

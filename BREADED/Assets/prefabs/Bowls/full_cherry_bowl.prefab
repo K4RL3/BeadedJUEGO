@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.50512975, y: -0.03377968, z: -0.3739628, w: 0.7770809}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 180.2237, y: 180.2237, z: 180.22371}
+  m_LocalScale: {x: 198.49834, y: 198.49834, z: 198.49835}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6491533649451640968}
@@ -99,6 +99,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6491533649451640968}
+  - component: {fileID: 4973579789210713729}
+  - component: {fileID: 9177748580764355003}
+  - component: {fileID: 3639093805760502574}
   m_Layer: 0
   m_Name: full_cherry_bowl
   m_TagString: Untagged
@@ -123,6 +126,54 @@ Transform:
   - {fileID: 9030776848390620567}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4973579789210713729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4129741293005812697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a97609fa6ac42246ac40136148b078d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverBowl
+  esBotellaOJarabe: 1
+--- !u!65 &9177748580764355003
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4129741293005812697}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.36497176, y: 0.24895692, z: 0.41624779}
+  m_Center: {x: 0, y: 0.11547899, z: 0}
+--- !u!114 &3639093805760502574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4129741293005812697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf6ab8ffecff0e64daca89cf117acade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BowlIngrediente
+  prefabFruta: {fileID: 7571418240804626595, guid: 1841d2b0c2d832a4bac7449bb614486e, type: 3}
+  ponerSoloUno: 1
 --- !u!1001 &8852241572865532540
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -133,15 +184,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 2a5d49c409f618b4ebd7d67e6a3b70de, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.0296077
+      value: 1.1340097
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2a5d49c409f618b4ebd7d67e6a3b70de, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.6470783
+      value: 0.7126919
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2a5d49c409f618b4ebd7d67e6a3b70de, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.0296077
+      value: 1.1340097
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2a5d49c409f618b4ebd7d67e6a3b70de, type: 3}
       propertyPath: m_LocalPosition.x

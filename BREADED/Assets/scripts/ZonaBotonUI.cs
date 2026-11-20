@@ -15,43 +15,78 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         mouseEncima = true;
-        Debug.Log("Mouse sobre el botón: " + gameObject.name);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         mouseEncima = false;
-        Debug.Log("Mouse salió del botón: " + gameObject.name);
+    }
+
+    private ArrastrarVaso ObtenerVasoActivo()
+    {
+        ArrastrarVaso[] vasos = FindObjectsByType<ArrastrarVaso>();
+        for (int i = 0; i < vasos.Length; i++)
+        {
+            if (vasos[i] != null && vasos[i].esVasoSeleccionado)
+                return vasos[i];
+        }
+
+        for (int i = 0; i < vasos.Length; i++)
+        {
+            if (vasos[i] != null)
+                return vasos[i];
+        }
+
+        return null;
     }
 
     void Update()
     {
-        // Detectamos el clic directamente en el Update
-        if (mouseEncima && Mouse.current.leftButton.wasReleasedThisFrame)
+        if (!mouseEncima || Mouse.current == null || !Mouse.current.leftButton.wasReleasedThisFrame)
+            return;
+
+        if (accionDelBoton == AccionBoton.Eliminar)
         {
-            ArrastrarVaso vaso = FindAnyObjectByType<ArrastrarVaso>();
-
-            if (vaso != null)
+            Vasos gestorVasos = FindAnyObjectByType<Vasos>();
+            if (gestorVasos != null)
             {
-                Debug.Log("¡Vaso encontrado! Ejecutando acción: " + accionDelBoton);
+                gestorVasos.EliminarVasoActual();
+                return;
+            }
 
-                if (accionDelBoton == AccionBoton.Eliminar)
-                {
-                    Destroy(vaso.gameObject);
-                }
-                else if (accionDelBoton == AccionBoton.IrAAcabados)
-                {
-                    vaso.MoverAEstacion(workSpotAcabados);
+            ArrastrarVaso vasoAEliminar = ObtenerVasoActivo();
+            if (vasoAEliminar != null)
+            {
+                Destroy(vasoAEliminar.gameObject);
+            }
+            return;
+        }
 
-                    if (navegador != null)
-                    {
-                        navegador.MoverAEstacionEspecifica(2);
-                    }
-                }
+        if (accionDelBoton == AccionBoton.IrAAcabados)
+        {
+            ArrastrarVaso vaso = ObtenerVasoActivo();
+            if (vaso == null)
+            {
+                Debug.LogWarning("ZonaBotonUI: No se encontró un vaso para mover a acabados.");
+                return;
+            }
+
+            if (workSpotAcabados != null)
+            {
+                vaso.MoverAEstacion(workSpotAcabados);
             }
             else
             {
-                Debug.Log("El mouse está sobre el botón, pero no se encontró ningún vaso siendo arrastrado.");
+                Debug.LogWarning("ZonaBotonUI: Falta asignar workSpotAcabados.");
+            }
+
+            if (navegador != null)
+            {
+                navegador.MoverAEstacionEspecifica(2);
+            }
+            else
+            {
+                Debug.LogWarning("ZonaBotonUI: Falta asignar navegador.");
             }
         }
     }
