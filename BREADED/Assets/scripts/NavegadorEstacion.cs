@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class NavegadorEstacion : MonoBehaviour
@@ -9,21 +10,22 @@ public class NavegadorEstacion : MonoBehaviour
         Fruta = 1,
         Crema = 2,
         Toppings = 3,
-        Extra = 4 // Renombra esta según la estación nueva que agregaste
+        Extra = 4
     }
 
-    [Tooltip("Orden de estaciones en escena (debe coincidir con NombreEstacion)")]
     [SerializeField] private Transform[] estaciones;
     public static int estacionInicial = 0;
 
     private int indiceEscenaPedidos1 = 2;
+    public int indiceEscenaCalificacion = 5;
+    public string nombreDestinoCalificacion = "PuntoVasoCalificacion";
 
-    [Header("Textos de los Botones")]
+    [Header("Botones y Textos de Navegación")]
+    public GameObject botonAdelante;
     public TextMeshProUGUI textoBotonAtras;
     public TextMeshProUGUI textoBotonAdelante;
 
     [Header("Botones Especiales")]
-    [Tooltip("Índices de estaciones donde aparecen los botones especiales")]
     public int[] estacionesConBotonesEspeciales = { (int)NombreEstacion.Fruta, (int)NombreEstacion.Crema };
     public GameObject botonEliminar;
     public GameObject botonIrACremas;
@@ -72,12 +74,67 @@ public class NavegadorEstacion : MonoBehaviour
             ActualizarTextos();
             ActualizarBotonesEspeciales();
         }
+    }
+
+    public void IrACalificacionConVaso()
+    {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
+
+        PrepararVasoParaCalificacion();
+
+        if (TransicionEscenasUI.Instance != null)
+            TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaCalificacion);
         else
+            SceneManager.LoadScene(indiceEscenaCalificacion);
+    }
+
+    private void PrepararVasoParaCalificacion()
+    {
+        ArrastrarVaso vaso = ObtenerVasoActivo();
+        if (vaso == null) return;
+
+        ParfaitMemoria.GuardarEstadoFinal(vaso);
+
+        vaso.esVasoSeleccionado = false;
+        vaso.transform.SetParent(null);
+        DontDestroyOnLoad(vaso.gameObject);
+
+        SceneManager.sceneLoaded -= OnEscenaCalificacionCargada;
+        SceneManager.sceneLoaded += OnEscenaCalificacionCargada;
+    }
+
+    private void OnEscenaCalificacionCargada(Scene escena, LoadSceneMode modo)
+    {
+        if (escena.buildIndex != indiceEscenaCalificacion) return;
+        SceneManager.sceneLoaded -= OnEscenaCalificacionCargada;
+
+        ArrastrarVaso vaso = ParfaitMemoria.VasoFinal != null
+            ? ParfaitMemoria.VasoFinal
+            : FindAnyObjectByType<ArrastrarVaso>();
+
+        GameObject destino = GameObject.Find(nombreDestinoCalificacion);
+        if (vaso != null && destino != null)
         {
-            // En la última estación, regresa a los clientes
-            if (TransicionEscenasUI.Instance != null)
-                TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaPedidos1);
+            vaso.MoverAEstacion(destino.transform, true);
         }
+    }
+
+    private ArrastrarVaso ObtenerVasoActivo()
+    {
+        ArrastrarVaso[] vasos = FindObjectsByType<ArrastrarVaso>();
+        for (int i = 0; i < vasos.Length; i++)
+        {
+            if (vasos[i] != null && vasos[i].esVasoSeleccionado)
+                return vasos[i];
+        }
+
+        for (int i = 0; i < vasos.Length; i++)
+        {
+            if (vasos[i] != null)
+                return vasos[i];
+        }
+
+        return null;
     }
 
     private string ObtenerEtiquetaEstacion(int indice)
@@ -101,11 +158,18 @@ public class NavegadorEstacion : MonoBehaviour
                 : "Clientes";
         }
 
+        bool haySiguiente = estacionActual < ultimoIndice;
+
+        if (botonAdelante != null)
+            botonAdelante.SetActive(haySiguiente);
+
         if (textoBotonAdelante != null)
         {
-            textoBotonAdelante.text = estacionActual < ultimoIndice
-                ? ObtenerEtiquetaEstacion(estacionActual + 1)
-                : "Clientes";
+            textoBotonAdelante.gameObject.SetActive(haySiguiente);
+            if (haySiguiente)
+            {
+                textoBotonAdelante.text = ObtenerEtiquetaEstacion(estacionActual + 1);
+            }
         }
     }
 

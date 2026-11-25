@@ -55,6 +55,7 @@ public class ArrastrarVaso : MonoBehaviour
         switch (estacion)
         {
             case 1:
+            case 3:
                 return EjeArrastre.EjeX;
             case 2:
                 return EjeArrastre.EjeZ;
@@ -62,6 +63,19 @@ public class ArrastrarVaso : MonoBehaviour
             default:
                 return EjeArrastre.Ninguno;
         }
+    }
+
+    private ZonaBotonUI BuscarZonaSobreCursor(Vector2 posicionPantalla)
+    {
+        ZonaBotonUI[] zonas = FindObjectsByType<ZonaBotonUI>();
+        for (int i = 0; i < zonas.Length; i++)
+        {
+            if (zonas[i] != null && zonas[i].EstaSobreZona(posicionPantalla))
+            {
+                return zonas[i];
+            }
+        }
+        return null;
     }
 
     void Update()
@@ -139,6 +153,13 @@ public class ArrastrarVaso : MonoBehaviour
             estaSiendoArrastrado = false;
             ejeActual = EjeArrastre.Ninguno;
 
+            ZonaBotonUI zonaDestino = BuscarZonaSobreCursor(Mouse.current.position.ReadValue());
+            if (zonaDestino != null)
+            {
+                zonaDestino.EjecutarAccionDesdeArrastre(this);
+                return;
+            }
+
             if (!procesadoPorBoton)
             {
                 RegresarAlInicio();
@@ -180,9 +201,9 @@ public class ArrastrarVaso : MonoBehaviour
         }
     }
 
-    public void MoverAEstacion(Transform nuevoWorkSpot)
+    public void MoverAEstacion(Transform nuevoWorkSpot, bool forzarMovimiento = false)
     {
-        if (!esVasoSeleccionado)
+        if (!esVasoSeleccionado && !forzarMovimiento)
         {
             if (ocultarNoSeleccionadosAlAvanzar)
             {
