@@ -58,6 +58,7 @@ public class Vasos : MonoBehaviour
             posInicialChico = vasoChico.position;
             rotInicialChico = vasoChico.rotation;
             padreInicialChico = vasoChico.parent;
+            ActivarColliders(vasoChico);
         }
 
         if (vasoGrande != null)
@@ -66,11 +67,26 @@ public class Vasos : MonoBehaviour
             posInicialGrande = vasoGrande.position;
             rotInicialGrande = vasoGrande.rotation;
             padreInicialGrande = vasoGrande.parent;
+            ActivarColliders(vasoGrande);
         }
+
+        Physics.SyncTransforms();
 
         if (vasoYaElegido)
         {
             SpawnearVasoGuardado();
+        }
+    }
+
+    void ActivarColliders(Transform objetivo)
+    {
+        if (objetivo == null) return;
+
+        Collider[] cols = objetivo.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < cols.Length; i++)
+        {
+            if (cols[i] != null)
+                cols[i].enabled = true;
         }
     }
 
@@ -93,6 +109,8 @@ public class Vasos : MonoBehaviour
         vaso.transform.localPosition = Vector3.zero;
         vaso.transform.localRotation = Quaternion.identity;
         vaso.transform.localScale = Vector3.one * escala;
+        ActivarColliders(vaso.transform);
+        Physics.SyncTransforms();
 
         yaEligio = true;
         terminocrecimiento = true;
@@ -205,6 +223,9 @@ public class Vasos : MonoBehaviour
         vasoYaElegido = true;
         eraChico = vasoEsChico;
 
+        ActivarColliders(vasoElegido);
+        Physics.SyncTransforms();
+
         ArrastrarVaso arr = vasoElegido != null ? vasoElegido.GetComponent<ArrastrarVaso>() : null;
         if (arr != null) arr.SeleccionarEsteVaso();
 
@@ -229,6 +250,7 @@ public class Vasos : MonoBehaviour
         if (t >= 1f)
         {
             vasoElegido.localScale = Vector3.one * (escalaOriginalElegida * escalaFinal);
+            Physics.SyncTransforms();
             terminocrecimiento = true;
             SpawnReplace();
             return;
@@ -247,6 +269,8 @@ public class Vasos : MonoBehaviour
         Vector3 spawnPos = posicionOriginalElegida + Vector3.up * 3f;
         reemplazoActual = Instantiate(prefab, spawnPos, Quaternion.identity);
         reemplazoActual.transform.localScale = Vector3.one * escalaOriginalElegida;
+        ActivarColliders(reemplazoActual.transform);
+        Physics.SyncTransforms();
 
         posicionDestinoReemplazo = posicionOriginalElegida;
         reemplazoCayendo = true;
@@ -272,6 +296,7 @@ public class Vasos : MonoBehaviour
         {
             reemplazoActual.transform.position = posicionDestinoReemplazo;
             reemplazoCayendo = false;
+            Physics.SyncTransforms();
 
             if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCaidaVaso();
         }
@@ -346,6 +371,8 @@ public class Vasos : MonoBehaviour
             vasoElegido.localPosition = Vector3.zero;
             vasoElegido.localRotation = Quaternion.identity;
             vasoElegido.localScale = Vector3.one * escalaOriginalElegida;
+            ActivarColliders(vasoElegido);
+            Physics.SyncTransforms();
 
             ArrastrarVaso arrastrar = vasoElegido.GetComponent<ArrastrarVaso>();
             if (arrastrar != null)
@@ -406,7 +433,6 @@ public class Vasos : MonoBehaviour
             Destroy(vasoElegido.gameObject);
         }
 
-        // <-- AQUÍ VAN ESTAS DOS LÍNEAS:
         LimpiarIngredientesDeVaso(vasoChico);
         LimpiarIngredientesDeVaso(vasoGrande);
 
@@ -417,6 +443,7 @@ public class Vasos : MonoBehaviour
             vasoChico.position = posInicialChico;
             vasoChico.rotation = rotInicialChico;
             vasoChico.localScale = Vector3.one * escalaOriginalChico;
+            ActivarColliders(vasoChico);
         }
 
         if (vasoGrande != null)
@@ -426,7 +453,10 @@ public class Vasos : MonoBehaviour
             vasoGrande.position = posInicialGrande;
             vasoGrande.rotation = rotInicialGrande;
             vasoGrande.localScale = Vector3.one * escalaOriginalGrande;
+            ActivarColliders(vasoGrande);
         }
+
+        Physics.SyncTransforms();
 
         vasoElegido = null;
         ultimoHover = null;

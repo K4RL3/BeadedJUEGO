@@ -4,11 +4,16 @@ using UnityEngine.InputSystem;
 
 public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public enum AccionBoton { Eliminar, IrAAcabados }
-    public AccionBoton accionDelBoton;
+    public enum AccionBoton { Eliminar, SiguienteEstacion }
+    public AccionBoton accionDelBoton = AccionBoton.SiguienteEstacion;
 
     public NavegadorEstacion navegador;
-    public Transform workSpotAcabados;
+
+    [Header("Puntos de Trabajo por Estación (Opcional)")]
+    [Tooltip("Punto donde se coloca el vaso según el índice de la estación destino")]
+    public Transform[] workSpotsPorEstacion;
+    [Tooltip("Punto de respaldo si no hay uno asignado para la estación destino")]
+    public Transform workSpotPorDefecto;
 
     private bool mouseEncima = false;
 
@@ -22,7 +27,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         mouseEncima = false;
     }
 
-    private ArrastrarVaso ObtenerVasoActivo()
+    private ArrastrarVaso ObtenerVasoSostenido()
     {
         ArrastrarVaso[] vasos = FindObjectsByType<ArrastrarVaso>();
         for (int i = 0; i < vasos.Length; i++)
@@ -30,14 +35,17 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             if (vasos[i] != null && vasos[i].esVasoSeleccionado)
                 return vasos[i];
         }
-
-        for (int i = 0; i < vasos.Length; i++)
-        {
-            if (vasos[i] != null)
-                return vasos[i];
-        }
-
         return null;
+    }
+
+    private Transform ObtenerWorkSpotParaEstacion(int indiceEstacion)
+    {
+        if (workSpotsPorEstacion != null && indiceEstacion >= 0 && indiceEstacion < workSpotsPorEstacion.Length)
+        {
+            if (workSpotsPorEstacion[indiceEstacion] != null)
+                return workSpotsPorEstacion[indiceEstacion];
+        }
+        return workSpotPorDefecto;
     }
 
     void Update()
@@ -54,40 +62,39 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return;
             }
 
-            ArrastrarVaso vasoAEliminar = ObtenerVasoActivo();
-            if (vasoAEliminar != null)
+            ArrastrarVaso vasoSostenido = ObtenerVasoSostenido();
+            if (vasoSostenido != null)
             {
-                Destroy(vasoAEliminar.gameObject);
+                Destroy(vasoSostenido.gameObject);
             }
             return;
         }
 
-        if (accionDelBoton == AccionBoton.IrAAcabados)
+        if (accionDelBoton == AccionBoton.SiguienteEstacion)
         {
-            ArrastrarVaso vaso = ObtenerVasoActivo();
+            ArrastrarVaso vaso = ObtenerVasoSostenido();
             if (vaso == null)
             {
-                Debug.LogWarning("ZonaBotonUI: No se encontró un vaso para mover a acabados.");
+                // Si no estabas sosteniendo el vaso, no dispara el avance accidentalmente
                 return;
             }
 
-            if (workSpotAcabados != null)
-            {
-                vaso.MoverAEstacion(workSpotAcabados);
-            }
-            else
-            {
-                Debug.LogWarning("ZonaBotonUI: Falta asignar workSpotAcabados.");
-            }
-
-            if (navegador != null)
-            {
-                navegador.MoverAEstacionEspecifica(2);
-            }
-            else
+            if (navegador == null)
             {
                 Debug.LogWarning("ZonaBotonUI: Falta asignar navegador.");
+                return;
             }
+
+            int estacionActual = navegador.ObtenerEstacionActual();
+            int siguienteEstacion = estacionActual + 1;
+
+            Transform destinoVaso = ObtenerWorkSpotParaEstacion(siguienteEstacion);
+            if (destinoVaso != null)
+            {
+                vaso.MoverAEstacion(destinoVaso);
+            }
+
+            navegador.BotonAdelante();
         }
     }
 }

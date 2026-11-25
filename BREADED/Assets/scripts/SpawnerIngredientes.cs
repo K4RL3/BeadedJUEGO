@@ -11,12 +11,14 @@ public class SpawnerIngredientes : MonoBehaviour
     public float tiempoDeDispensado = 1f;
     public float intervaloCaida = 0.1f;
 
-    [Header("Puntos de Referencia")]
-    public Transform puntoDeCaida;          // Estación 1 (mueve en X, Z fijo)
-    public Transform puntoDeCaidaToppings;  // Estación 2 (mueve en Z, X fijo)
+    [Header("Estaciones y Puntos de Referencia")]
+    [Tooltip("Índice de estación en NavegadorEstacion donde el ratón controla Y y Z (X fija)")]
+    public int indiceEstacionToppings = 3;
+    public Transform puntoDeCaidaPrincipal; // Estación normal (mueve en X e Y, Z fija)
+    public Transform puntoDeCaidaToppings;  // Estación de toppings (mueve en Y y Z, X fija)
     public float alturaMaxima = 4f;
 
-    private GameObject prefabFrutaActual;
+    private GameObject prefabIngredienteActual;
     private Camera camara;
     private NavegadorEstacion navegador;
     private Coroutine rutinaActiva;
@@ -29,17 +31,19 @@ public class SpawnerIngredientes : MonoBehaviour
 
     private bool EsEstacionToppings()
     {
-        return navegador != null && navegador.ObtenerEstacionActual() == 2 && puntoDeCaidaToppings != null;
+        return navegador != null
+            && navegador.ObtenerEstacionActual() == indiceEstacionToppings
+            && puntoDeCaidaToppings != null;
     }
 
     public void PrepararBowl(GameObject prefab)
     {
-        prefabFrutaActual = prefab;
+        prefabIngredienteActual = prefab;
     }
 
     public void DispararLluviaDeFrutas()
     {
-        if (prefabFrutaActual == null) return;
+        if (prefabIngredienteActual == null) return;
 
         if (soloUnoPorVez)
         {
@@ -56,10 +60,10 @@ public class SpawnerIngredientes : MonoBehaviour
 
     public void DispararUnoSolo()
     {
-        if (prefabFrutaActual == null) return;
+        if (prefabIngredienteActual == null) return;
 
-        LanzarUnaFruta();
-        prefabFrutaActual = null;
+        LanzarUnIngrediente();
+        prefabIngredienteActual = null;
     }
 
     IEnumerator RutinaDispensado()
@@ -68,21 +72,21 @@ public class SpawnerIngredientes : MonoBehaviour
 
         while (tiempoTranscurrido < tiempoDeDispensado)
         {
-            LanzarUnaFruta();
+            LanzarUnIngrediente();
             yield return new WaitForSeconds(intervaloCaida);
             tiempoTranscurrido += intervaloCaida;
         }
 
-        prefabFrutaActual = null;
+        prefabIngredienteActual = null;
         rutinaActiva = null;
     }
 
-    void LanzarUnaFruta()
+    void LanzarUnIngrediente()
     {
         bool enToppings = EsEstacionToppings();
-        Transform puntoActivo = enToppings ? puntoDeCaidaToppings : puntoDeCaida;
+        Transform puntoActivo = enToppings ? puntoDeCaidaToppings : puntoDeCaidaPrincipal;
 
-        if (prefabFrutaActual == null || puntoActivo == null || camara == null || Mouse.current == null)
+        if (prefabIngredienteActual == null || puntoActivo == null || camara == null || Mouse.current == null)
             return;
 
         Vector2 posMouse = Mouse.current.position.ReadValue();
@@ -92,7 +96,7 @@ public class SpawnerIngredientes : MonoBehaviour
 
         if (enToppings)
         {
-            // Estación 2 (Toppings): X fija en puntoDeCaidaToppings.x, ratón controla Y y Z
+            // Estación de Toppings: X fija en puntoDeCaidaToppings.x, ratón controla Y y Z
             Plane planoLateral = new Plane(Vector3.right, puntoActivo.position);
             if (planoLateral.Raycast(rayo, out float distancia))
             {
@@ -103,7 +107,7 @@ public class SpawnerIngredientes : MonoBehaviour
         }
         else
         {
-            // Estación 1 (Armado): Z fija en puntoDeCaida.z, ratón controla X e Y
+            // Estaciones principales: Z fija en puntoDeCaidaPrincipal.z, ratón controla X e Y
             Plane planoFrontal = new Plane(Vector3.forward, puntoActivo.position);
             if (planoFrontal.Raycast(rayo, out float distancia))
             {
@@ -118,9 +122,9 @@ public class SpawnerIngredientes : MonoBehaviour
             Random.Range(0, 360),
             Random.Range(0, 360)
         );
-        GameObject fruta = Instantiate(prefabFrutaActual, puntoSpawn, rotacionAleatoria);
+        GameObject instancia = Instantiate(prefabIngredienteActual, puntoSpawn, rotacionAleatoria);
 
-        Rigidbody rb = fruta.GetComponent<Rigidbody>();
+        Rigidbody rb = instancia.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;
