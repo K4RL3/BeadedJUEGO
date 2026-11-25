@@ -16,12 +16,14 @@ public class MoverCamara : MonoBehaviour
 
     // Guardamos la rotación original de la cámara al iniciar
     private Quaternion rotacionBaseCamara;
+    private NavegadorEstacion navegador;
 
     void Awake()
     {
         camara = Camera.main.transform;
         // Guardamos el ángulo perfecto que ya tienes configurado
         rotacionBaseCamara = camara.rotation;
+        navegador = GetComponent<NavegadorEstacion>();
     }
 
     public void MoverAToppings() => IniciarMovimiento(camPos_Toppings);
@@ -35,22 +37,28 @@ public class MoverCamara : MonoBehaviour
 
         rotacionInicial = camara.rotation;
 
-        // --- EL TRUCO ESTÁ AQUÍ ---
-        // 1. Calculamos hacia dónde tiene que mirar la cámara (dirección)
-        // 2. Le aplicamos la inclinación original (rotacionBaseCamara)
+        int estacionIdx = navegador != null ? navegador.ObtenerEstacionActual() : 0;
 
-        Vector3 direccionHaciaDestino = destino.position - posicionFinal; // Usamos la posición del empty como referencia
-                                                                          // (Si el Empty está exactamente donde va la cámara, usamos la rotación del Empty solo para el eje Y)
+        // 0 (Vasos) y 1 (Fruta): en línea, sin girar (mismo Y base)
+        // 2 (Crema): +90° a la derecha
+        // 3 (Toppings): otros +90° a la derecha (+180° desde el inicio)
+        float giroAdicionalY = 0f;
+        if (estacionIdx == 2)
+        {
+            giroAdicionalY = 90f;
+        }
+        else if (estacionIdx == 3)
+        {
+            giroAdicionalY = 180f;
+        }
 
-        // Tomamos el ángulo Y (horizontal) del Empty destino
-        float anguloY = destino.eulerAngles.y;
+        float anguloY = rotacionBaseCamara.eulerAngles.y + giroAdicionalY;
 
         // Tomamos los ángulos X y Z originales de la cámara para no perder la inclinación
         float anguloXOriginal = rotacionBaseCamara.eulerAngles.x;
         float anguloZOriginal = rotacionBaseCamara.eulerAngles.z;
 
         rotacionFinal = Quaternion.Euler(anguloXOriginal, anguloY, anguloZOriginal);
-        // ---------------------------
 
         tiempoTranscurrido = 0f;
         moviendo = true;

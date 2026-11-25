@@ -3,6 +3,16 @@ using TMPro;
 
 public class NavegadorEstacion : MonoBehaviour
 {
+    public enum NombreEstacion
+    {
+        Vasos = 0,
+        Fruta = 1,
+        Crema = 2,
+        Toppings = 3,
+        Extra = 4 // Renombra esta según la estación nueva que agregaste
+    }
+
+    [Tooltip("Orden de estaciones en escena (debe coincidir con NombreEstacion)")]
     [SerializeField] private Transform[] estaciones;
     public static int estacionInicial = 0;
 
@@ -12,7 +22,9 @@ public class NavegadorEstacion : MonoBehaviour
     public TextMeshProUGUI textoBotonAtras;
     public TextMeshProUGUI textoBotonAdelante;
 
-    [Header("Botones Especiales (Solo Estación Bowls)")]
+    [Header("Botones Especiales")]
+    [Tooltip("Índices de estaciones donde aparecen los botones especiales")]
+    public int[] estacionesConBotonesEspeciales = { (int)NombreEstacion.Fruta, (int)NombreEstacion.Crema };
     public GameObject botonEliminar;
     public GameObject botonIrACremas;
 
@@ -22,8 +34,11 @@ public class NavegadorEstacion : MonoBehaviour
     void Start()
     {
         cameraMover = GetComponent<MoverCamara>();
-        estacionActual = estacionInicial;
-        cameraMover.MoverAEstacion(estaciones[estacionActual]);
+        estacionActual = Mathf.Clamp(estacionInicial, 0, Mathf.Max(0, estaciones.Length - 1));
+        if (estaciones.Length > 0 && cameraMover != null)
+        {
+            cameraMover.MoverAEstacion(estaciones[estacionActual]);
+        }
         ActualizarTextos();
         ActualizarBotonesEspeciales();
     }
@@ -35,7 +50,7 @@ public class NavegadorEstacion : MonoBehaviour
         if (estacionActual > 0)
         {
             estacionActual--;
-            cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
         }
@@ -53,57 +68,82 @@ public class NavegadorEstacion : MonoBehaviour
         if (estacionActual < estaciones.Length - 1)
         {
             estacionActual++;
-            cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
         }
+        else
+        {
+            // En la última estación, regresa a los clientes
+            if (TransicionEscenasUI.Instance != null)
+                TransicionEscenasUI.Instance.DisolverSalida(indiceEscenaPedidos1);
+        }
+    }
+
+    private string ObtenerEtiquetaEstacion(int indice)
+    {
+        if (System.Enum.IsDefined(typeof(NombreEstacion), indice))
+        {
+            NombreEstacion est = (NombreEstacion)indice;
+            return est == NombreEstacion.Extra ? "Extra" : est.ToString();
+        }
+        return "Estación " + indice;
     }
 
     void ActualizarTextos()
     {
-        if (estacionActual == 0)
+        int ultimoIndice = estaciones.Length - 1;
+
+        if (textoBotonAtras != null)
         {
-            if (textoBotonAtras != null) textoBotonAtras.text = "Clientes";
-            if (textoBotonAdelante != null) textoBotonAdelante.text = "Ingredientes";
+            textoBotonAtras.text = estacionActual > 0
+                ? ObtenerEtiquetaEstacion(estacionActual - 1)
+                : "Clientes";
         }
-        else if (estacionActual == 1)
+
+        if (textoBotonAdelante != null)
         {
-            if (textoBotonAtras != null) textoBotonAtras.text = "Armado";
-            if (textoBotonAdelante != null) textoBotonAdelante.text = "Acabados";
-        }
-        else if (estacionActual == 2)
-        {
-            if (textoBotonAtras != null) textoBotonAtras.text = "Ingredientes";
-            if (textoBotonAdelante != null) textoBotonAdelante.text = "Toppings";
-        }
-        else if (estacionActual == 3)
-        {
-            if (textoBotonAtras != null) textoBotonAtras.text = "Acabados";
-            if (textoBotonAdelante != null) textoBotonAdelante.text = "";
+            textoBotonAdelante.text = estacionActual < ultimoIndice
+                ? ObtenerEtiquetaEstacion(estacionActual + 1)
+                : "Clientes";
         }
     }
 
     void ActualizarBotonesEspeciales()
     {
-        bool mostrarBotones = (estacionActual == 1 || estacionActual == 2);
+        bool mostrarBotones = false;
+        if (estacionesConBotonesEspeciales != null)
+        {
+            for (int i = 0; i < estacionesConBotonesEspeciales.Length; i++)
+            {
+                if (estacionesConBotonesEspeciales[i] == estacionActual)
+                {
+                    mostrarBotones = true;
+                    break;
+                }
+            }
+        }
 
         if (botonEliminar != null) botonEliminar.SetActive(mostrarBotones);
         if (botonIrACremas != null) botonIrACremas.SetActive(mostrarBotones);
     }
 
-    // --- ESTA ES LA FUNCIÓN QUE FALTABA ---
     public int ObtenerEstacionActual()
     {
         return estacionActual;
     }
 
-    // --- FUNCIÓN PARA MOVERSE A UNA ESTACIÓN ESPECÍFICA ---
+    public NombreEstacion ObtenerNombreEstacionActual()
+    {
+        return (NombreEstacion)estacionActual;
+    }
+
     public void MoverAEstacionEspecifica(int indice)
     {
         if (indice >= 0 && indice < estaciones.Length)
         {
             estacionActual = indice;
-            cameraMover.MoverAEstacion(estaciones[estacionActual]);
+            if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
         }

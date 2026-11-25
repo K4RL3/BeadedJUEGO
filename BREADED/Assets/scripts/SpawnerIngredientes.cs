@@ -4,33 +4,66 @@ using UnityEngine.InputSystem;
 
 public class SpawnerIngredientes : MonoBehaviour
 {
-    [Header("Tiempos de Dispensado")]
+    [Header("Modo de Dispensado")]
+    public bool soloUnoPorVez = false;
+
+    [Header("Tiempos de Dispensado (Modo Lluvia)")]
     public float tiempoDeDispensado = 1f;
     public float intervaloCaida = 0.1f;
 
-    [Header("Punto de Referencia (Arrastra 'centro (1)' aquí)")]
-    public Transform puntoDeCaida;
-    public float alturaMaxima = 4f; // Altura máxima si mueves el mouse muy arriba
+    [Header("Estaciones y Puntos de Referencia")]
+    [Tooltip("Índice de estación en NavegadorEstacion donde el ratón controla Y y Z (X fija)")]
+    public int indiceEstacionToppings = 3;
+    public Transform puntoDeCaidaPrincipal; // Estación normal (mueve en X e Y, Z fija)
+    public Transform puntoDeCaidaToppings;  // Estación de toppings (mueve en Y y Z, X fija)
+    public float alturaMaxima = 4f;
 
-    private GameObject prefabFrutaActual;
+    private GameObject prefabIngredienteActual;
     private Camera camara;
+    private NavegadorEstacion navegador;
+    private Coroutine rutinaActiva;
 
     void Start()
     {
         camara = Camera.main;
+        navegador = FindAnyObjectByType<NavegadorEstacion>();
+    }
+
+    private bool EsEstacionToppings()
+    {
+        return navegador != null
+            && navegador.ObtenerEstacionActual() == indiceEstacionToppings
+            && puntoDeCaidaToppings != null;
     }
 
     public void PrepararBowl(GameObject prefab)
     {
-        prefabFrutaActual = prefab;
+        prefabIngredienteActual = prefab;
     }
 
     public void DispararLluviaDeFrutas()
     {
-        if (prefabFrutaActual != null)
+        if (prefabIngredienteActual == null) return;
+
+        if (soloUnoPorVez)
         {
-            StartCoroutine(RutinaDispensado());
+            DispararUnoSolo();
+            return;
         }
+
+        if (rutinaActiva != null)
+        {
+            StopCoroutine(rutinaActiva);
+        }
+        rutinaActiva = StartCoroutine(RutinaDispensado());
+    }
+
+    public void DispararUnoSolo()
+    {
+        if (prefabIngredienteActual == null) return;
+
+        LanzarUnIngrediente();
+        prefabIngredienteActual = null;
     }
 
     IEnumerator RutinaDispensado()
@@ -39,41 +72,59 @@ public class SpawnerIngredientes : MonoBehaviour
 
         while (tiempoTranscurrido < tiempoDeDispensado)
         {
-            LanzarUnaFruta();
+            LanzarUnIngrediente();
             yield return new WaitForSeconds(intervaloCaida);
             tiempoTranscurrido += intervaloCaida;
         }
 
-        prefabFrutaActual = null;
+        prefabIngredienteActual = null;
+        rutinaActiva = null;
     }
 
-    void LanzarUnaFruta()
+    void LanzarUnIngrediente()
     {
-        if (prefabFrutaActual == null || puntoDeCaida == null) return;
+        bool enToppings = EsEstacionToppings();
+        Transform puntoActivo = enToppings ? puntoDeCaidaToppings : puntoDeCaidaPrincipal;
 
-        // 1. Obtenemos la posición del mouse en pantalla (de 0 a Screen.width y 0 a Screen.height)
+        if (prefabIngredienteActual == null || puntoActivo == null || camara == null || Mouse.current == null)
+            return;
+
         Vector2 posMouse = Mouse.current.position.ReadValue();
+        Ray rayo = camara.ScreenPointToRay(posMouse);
 
-        // 2. Proyectamos esa posición a coordenadas del mundo. 
-        // Le pasamos la Z de tu 'centro (1)' para que respete la profundidad.
-        Vector3 posMundo = camara.ScreenToWorldPoint(new Vector3(posMouse.x, posMouse.y, Mathf.Abs(camara.transform.position.z - puntoDeCaida.position.z)));
+        Vector3 puntoSpawn = puntoActivo.position + Vector3.up * 1.5f;
 
-        // 3. Armamos la posición final:
-        // - X: Donde está el mouse
-        // - Y: La altura del mouse (limitada a alturaMaxima)
-        // - Z: La Z exacta de tu 'centro (1)'
-        float posX = posMundo.x;
-        float posY = Mathf.Clamp(posMundo.y, puntoDeCaida.position.y + 1f, alturaMaxima);
-        float posZ = puntoDeCaida.position.z;
+        if (enToppings)
+        {
+            // Estación de Toppings: X fija en puntoDeCaidaToppings.x, ratón controla Y y Z
+            Plane planoLateral = new Plane(Vector3.right, puntoActivo.position);
+            if (planoLateral.Raycast(rayo, out float distancia))
+            {
+                Vector3 impacto = rayo.GetPoint(distancia);
+                float posY = Mathf.Clamp(impacto.y, puntoActivo.position.y + 1f, alturaMaxima);
+                puntoSpawn = new Vector3(puntoActivo.position.x, posY, impacto.z);
+            }
+        }
+        else
+        {
+            // Estaciones principales: Z fija en puntoDeCaidaPrincipal.z, ratón controla X e Y
+            Plane planoFrontal = new Plane(Vector3.forward, puntoActivo.position);
+            if (planoFrontal.Raycast(rayo, out float distancia))
+            {
+                Vector3 impacto = rayo.GetPoint(distancia);
+                float posY = Mathf.Clamp(impacto.y, puntoActivo.position.y + 1f, alturaMaxima);
+                puntoSpawn = new Vector3(impacto.x, posY, puntoActivo.position.z);
+            }
+        }
 
-        Vector3 puntoSpawn = new Vector3(posX, posY, posZ);
+        Quaternion rotacionAleatoria = Quaternion.Euler(
+            Random.Range(0, 360),
+            Random.Range(0, 360),
+            Random.Range(0, 360)
+        );
+        GameObject instancia = Instantiate(prefabIngredienteActual, puntoSpawn, rotacionAleatoria);
 
-        // 4. Instanciamos
-        Quaternion rotacionAleatoria = Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-        GameObject fruta = Instantiate(prefabFrutaActual, puntoSpawn, rotacionAleatoria);
-
-        // 5. Física de caída
-        Rigidbody rb = fruta.GetComponent<Rigidbody>();
+        Rigidbody rb = instancia.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;

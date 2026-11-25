@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 8784368591043661421}
   - component: {fileID: 2342141125026070665}
   - component: {fileID: 4963761301892626792}
+  - component: {fileID: -7502402785574372869}
+  - component: {fileID: -1861864440514106366}
+  - component: {fileID: 3408760498358906458}
   m_Layer: 0
   m_Name: full_lemon
   m_TagString: Untagged
@@ -28,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.70710695, y: 0, z: 0, w: 0.7071066}
   m_LocalPosition: {x: -5.1168976, y: -1.5509775, z: 0.7830702}
-  m_LocalScale: {x: 433.64124, y: 433.64124, z: 433.64124}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 205, y: 205, z: 205}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -90,3 +93,65 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &-7502402785574372869
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363879068136465348}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7589735457484769141, guid: 2da57c99f005f6c45bd5e47512d5abe9, type: 3}
+--- !u!54 &-1861864440514106366
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363879068136465348}
+  serializedVersion: 5
+  m_Mass: 0.5
+  m_LinearDamping: 0.5
+  m_AngularDamping: 0.5
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &3408760498358906458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363879068136465348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b6aab311ff19d45adaa622cdd36941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IngredienteVolador
+  nombreIngrediente: full_lmon

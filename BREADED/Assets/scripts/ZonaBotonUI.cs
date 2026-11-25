@@ -4,55 +4,97 @@ using UnityEngine.InputSystem;
 
 public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public enum AccionBoton { Eliminar, IrAAcabados }
-    public AccionBoton accionDelBoton;
+    public enum AccionBoton { Eliminar, SiguienteEstacion }
+    public AccionBoton accionDelBoton = AccionBoton.SiguienteEstacion;
 
     public NavegadorEstacion navegador;
-    public Transform workSpotAcabados;
+
+    [Header("Puntos de Trabajo por Estación (Opcional)")]
+    [Tooltip("Punto donde se coloca el vaso según el índice de la estación destino")]
+    public Transform[] workSpotsPorEstacion;
+    [Tooltip("Punto de respaldo si no hay uno asignado para la estación destino")]
+    public Transform workSpotPorDefecto;
 
     private bool mouseEncima = false;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         mouseEncima = true;
-        Debug.Log("Mouse sobre el botón: " + gameObject.name);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         mouseEncima = false;
-        Debug.Log("Mouse salió del botón: " + gameObject.name);
+    }
+
+    private ArrastrarVaso ObtenerVasoSostenido()
+    {
+        ArrastrarVaso[] vasos = FindObjectsByType<ArrastrarVaso>();
+        for (int i = 0; i < vasos.Length; i++)
+        {
+            if (vasos[i] != null && vasos[i].esVasoSeleccionado)
+                return vasos[i];
+        }
+        return null;
+    }
+
+    private Transform ObtenerWorkSpotParaEstacion(int indiceEstacion)
+    {
+        if (workSpotsPorEstacion != null && indiceEstacion >= 0 && indiceEstacion < workSpotsPorEstacion.Length)
+        {
+            if (workSpotsPorEstacion[indiceEstacion] != null)
+                return workSpotsPorEstacion[indiceEstacion];
+        }
+        return workSpotPorDefecto;
     }
 
     void Update()
     {
-        // Detectamos el clic directamente en el Update
-        if (mouseEncima && Mouse.current.leftButton.wasReleasedThisFrame)
+        if (!mouseEncima || Mouse.current == null || !Mouse.current.leftButton.wasReleasedThisFrame)
+            return;
+
+        if (accionDelBoton == AccionBoton.Eliminar)
         {
-            ArrastrarVaso vaso = FindAnyObjectByType<ArrastrarVaso>();
-
-            if (vaso != null)
+            Vasos gestorVasos = FindAnyObjectByType<Vasos>();
+            if (gestorVasos != null)
             {
-                Debug.Log("¡Vaso encontrado! Ejecutando acción: " + accionDelBoton);
-
-                if (accionDelBoton == AccionBoton.Eliminar)
-                {
-                    Destroy(vaso.gameObject);
-                }
-                else if (accionDelBoton == AccionBoton.IrAAcabados)
-                {
-                    vaso.MoverAEstacion(workSpotAcabados);
-
-                    if (navegador != null)
-                    {
-                        navegador.MoverAEstacionEspecifica(2);
-                    }
-                }
+                gestorVasos.EliminarVasoActual();
+                return;
             }
-            else
+
+            ArrastrarVaso vasoSostenido = ObtenerVasoSostenido();
+            if (vasoSostenido != null)
             {
-                Debug.Log("El mouse está sobre el botón, pero no se encontró ningún vaso siendo arrastrado.");
+                Destroy(vasoSostenido.gameObject);
             }
+            return;
+        }
+
+        if (accionDelBoton == AccionBoton.SiguienteEstacion)
+        {
+            ArrastrarVaso vaso = ObtenerVasoSostenido();
+            if (vaso == null)
+            {
+                // Si no estabas sosteniendo el vaso, no dispara el avance accidentalmente
+                return;
+            }
+
+            if (navegador == null)
+            {
+                Debug.LogWarning("ZonaBotonUI: Falta asignar navegador.");
+                return;
+            }
+
+            int estacionActual = navegador.ObtenerEstacionActual();
+            int siguienteEstacion = estacionActual + 1;
+
+            Transform destinoVaso = ObtenerWorkSpotParaEstacion(siguienteEstacion);
+            if (destinoVaso != null)
+            {
+                vaso.MoverAEstacion(destinoVaso);
+            }
+
+            navegador.BotonAdelante();
         }
     }
 }
