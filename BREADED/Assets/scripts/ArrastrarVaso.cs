@@ -12,6 +12,8 @@ public class ArrastrarVaso : MonoBehaviour
 
     public bool esVasoSeleccionado = false;
     public bool ocultarNoSeleccionadosAlAvanzar = false;
+    public int indiceEstacionCremas = 2;
+    public bool bloquearArrastreEnEstacionCremas = true;
 
     [HideInInspector] public bool procesadoPorBoton = false;
 
@@ -52,6 +54,9 @@ public class ArrastrarVaso : MonoBehaviour
 
     private EjeArrastre ObtenerEjePorEstacion(int estacion)
     {
+        if (bloquearArrastreEnEstacionCremas && estacion == indiceEstacionCremas)
+            return EjeArrastre.Ninguno;
+
         switch (estacion)
         {
             case 1:

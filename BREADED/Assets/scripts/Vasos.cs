@@ -482,6 +482,15 @@ public class Vasos : MonoBehaviour
             AsegurarZonaCaidaEnVaso(vasoGrande, prefabVasoGrande);
         }
 
+        MinijuegoCrema minijuegoCrema = FindAnyObjectByType<MinijuegoCrema>();
+        if (minijuegoCrema != null)
+        {
+            minijuegoCrema.ResetearCremaEnVaso(vasoChico);
+            minijuegoCrema.ResetearCremaEnVaso(vasoGrande);
+            if (vasoSpawneadoActual != null)
+                minijuegoCrema.ResetearCremaEnVaso(vasoSpawneadoActual.transform);
+        }
+
         vasoElegido = null;
         ultimoHover = null;
         yaEligio = false;

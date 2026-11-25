@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,41 +8,50 @@ public class MinijuegoCrema : MonoBehaviour
 {
     public enum TipoRelleno { Amarillo, Blanca, Fresa }
 
-    [Header("Boquillas en la Escena (3D)")]
-    public Transform boquillaAmarilla;
-    public Transform boquillaBlanca;
-    public Transform boquillaFresa;
-    public Transform puntoSalidaBoquilla;
-    public float velocidadMoverBoquilla = 8f;
+    [Header("Avance a Toppings")]
+    public NavegadorEstacion navegador;
+    public int indiceEstacionToppings = 3;
+    public Transform destinoToppings;
+    public bool moverVasoADestinoToppings = true;
 
-    [Header("Posición del Vaso durante el Minijuego")]
-    public Transform posicionCentroVaso;
-    public float velocidadMoverVaso = 7f;
+    [Header("Colores de Crema")]
+    public Color colorAmarillo = new Color(1f, 0.85f, 0.2f);
+    public Color colorBlanca = new Color(0.98f, 0.96f, 0.92f);
+    public Color colorFresa = new Color(1f, 0.45f, 0.65f);
 
-    [Header("UI del Minijuego")]
-    public GameObject canvasMinijuego;
-    public Button stopButton;
-    public RectTransform flecha;
-    public RectTransform puntoIzquierdo;
-    public RectTransform puntoDerecho;
+    private const float VelocidadMoverBoquilla = 3f;
+    private const float VelocidadMoverVaso = 3f;
+    private const float DuracionParticulas = 2f;
+    private const float EsperaTrasParticulas = 1f;
 
-    [Header("Velocidad y Zonas (0 = Izquierda, 1 = Derecha)")]
-    public float velocidadBarra = 2.2f;
-    [Range(0f, 1f)] public float inicioVerde = 0.38f;
-    [Range(0f, 1f)] public float finVerde = 0.62f;
-    [Range(0f, 1f)] public float inicioNaranja = 0.20f;
-    [Range(0f, 1f)] public float finNaranja = 0.80f;
+    private const float VelocidadBarra = 0.7f;
+    private const float RadioVerde = 0.12f;
+    private const float RadioAmarillo = 0.24f;
+    private const float RadioNaranja = 0.38f;
 
-    [Header("Deformación de Relleno (Base 1,1,1)")]
-    public float grosorVerde = 1.0f;
-    public float grosorNaranja = 1.35f;
-    public float grosorRojo = 1.75f;
-    public float expansionAnchoRojo = 1.15f;
+    private const float GrosorVerde = 1f;
+    private const float GrosorAmarillo = 0.8f;
+    private const float GrosorNaranja = 0.5f;
+    private const float GrosorRojo = 0.2f;
 
-    [Header("Nombres de Rellenos en el Vaso")]
-    public string nombreAmarillo = "Relleno_a";
-    public string nombreBlanca = "Relleno_b";
-    public string nombreFresa = "Relleno_f";
+    private const float ToleranciaCentro2 = 0.25f;
+    private const string NombreAmarillo = "Relleno_a";
+    private const string NombreBlanca = "Relleno_b";
+    private const string NombreFresa = "Relleno_f";
+
+    private Transform boquillaAmarilla;
+    private Transform boquillaBlanca;
+    private Transform boquillaFresa;
+    private Transform puntoSalidaBoquilla;
+    private Transform centro2;
+    private Transform posicionCentroVaso;
+
+    private ParticleSystem particulasCrema;
+    private GameObject canvasMinijuego;
+    private Button stopButton;
+    private RectTransform flecha;
+    private RectTransform puntoIzquierdo;
+    private RectTransform puntoDerecho;
 
     private bool seleccionandoBoquilla = true;
     private bool minijuegoActivo = false;
@@ -61,13 +71,20 @@ public class MinijuegoCrema : MonoBehaviour
     private TipoRelleno saborActual;
     private Transform boquillaActiva;
     private Transform rellenoActual;
+    private Coroutine secuenciaTransicionCoroutine;
     private readonly List<Behaviour> scriptsHoverDesactivados = new List<Behaviour>();
+    private readonly HashSet<EntityId> vasosConCremaAplicada = new HashSet<EntityId>();
 
     private Vector3 posInicialAmarilla, posInicialBlanca, posInicialFresa;
     private Quaternion rotInicialAmarilla, rotInicialBlanca, rotInicialFresa;
 
     void Awake()
     {
+        if (navegador == null)
+            navegador = FindAnyObjectByType<NavegadorEstacion>();
+
+        BuscarReferenciasEnEscena();
+
         if (boquillaAmarilla != null)
         {
             posInicialAmarilla = boquillaAmarilla.position;
@@ -89,6 +106,39 @@ public class MinijuegoCrema : MonoBehaviour
 
         if (canvasMinijuego != null)
             canvasMinijuego.SetActive(false);
+
+        if (particulasCrema != null)
+            particulasCrema.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    private void BuscarReferenciasEnEscena()
+    {
+        GameObject objAmarilla = GameObject.Find("Crema_Amarilla");
+        GameObject objBlanca = GameObject.Find("Crema_blanca");
+        GameObject objFresa = GameObject.Find("Crema_fresa");
+        GameObject objSalida = GameObject.Find("pos crema");
+        GameObject objCentro2 = GameObject.Find("centro (2)");
+        GameObject objCentro4 = GameObject.Find("centro (4)");
+        GameObject objParticulas = GameObject.Find("Particle_crema");
+        GameObject objCanvas = GameObject.Find("Canvas_MinijuegoCrema");
+        GameObject objStop = GameObject.Find("stopButton");
+        GameObject objFlecha = GameObject.Find("flecha");
+        GameObject objStart = GameObject.Find("start");
+        GameObject objFin = GameObject.Find("fin");
+
+        if (objAmarilla != null) boquillaAmarilla = objAmarilla.transform;
+        if (objBlanca != null) boquillaBlanca = objBlanca.transform;
+        if (objFresa != null) boquillaFresa = objFresa.transform;
+        if (objSalida != null) puntoSalidaBoquilla = objSalida.transform;
+        if (objCentro2 != null) centro2 = objCentro2.transform;
+        if (objCentro4 != null) posicionCentroVaso = objCentro4.transform;
+
+        if (objParticulas != null) particulasCrema = objParticulas.GetComponent<ParticleSystem>();
+        if (objCanvas != null) canvasMinijuego = objCanvas;
+        if (objStop != null) stopButton = objStop.GetComponent<Button>();
+        if (objFlecha != null) flecha = objFlecha.GetComponent<RectTransform>();
+        if (objStart != null) puntoIzquierdo = objStart.GetComponent<RectTransform>();
+        if (objFin != null) puntoDerecho = objFin.GetComponent<RectTransform>();
     }
 
     void Update()
@@ -105,12 +155,12 @@ public class MinijuegoCrema : MonoBehaviour
             boquillaActiva.position = Vector3.MoveTowards(
                 boquillaActiva.position,
                 puntoSalidaBoquilla.position,
-                velocidadMoverBoquilla * Time.deltaTime
+                VelocidadMoverBoquilla * Time.deltaTime
             );
             boquillaActiva.rotation = Quaternion.Slerp(
                 boquillaActiva.rotation,
                 puntoSalidaBoquilla.rotation,
-                velocidadMoverBoquilla * Time.deltaTime
+                VelocidadMoverBoquilla * Time.deltaTime
             );
         }
 
@@ -122,12 +172,12 @@ public class MinijuegoCrema : MonoBehaviour
             boquillaActiva.position = Vector3.MoveTowards(
                 boquillaActiva.position,
                 posDestino,
-                velocidadMoverBoquilla * Time.deltaTime
+                VelocidadMoverBoquilla * Time.deltaTime
             );
             boquillaActiva.rotation = Quaternion.Slerp(
                 boquillaActiva.rotation,
                 rotDestino,
-                velocidadMoverBoquilla * Time.deltaTime
+                VelocidadMoverBoquilla * Time.deltaTime
             );
 
             if (Vector3.Distance(boquillaActiva.position, posDestino) < 0.005f)
@@ -144,7 +194,7 @@ public class MinijuegoCrema : MonoBehaviour
 
         if (minijuegoActivo)
         {
-            progreso += direccion * velocidadBarra * Time.deltaTime;
+            progreso += direccion * VelocidadBarra * Time.deltaTime;
             if (progreso >= 1f)
             {
                 progreso = 1f;
@@ -175,7 +225,7 @@ public class MinijuegoCrema : MonoBehaviour
         vasoObjetivoActual.position = Vector3.MoveTowards(
             vasoObjetivoActual.position,
             destinoVasoActual,
-            velocidadMoverVaso * Time.deltaTime
+            VelocidadMoverVaso * Time.deltaTime
         );
 
         if (regresandoVaso)
@@ -183,7 +233,7 @@ public class MinijuegoCrema : MonoBehaviour
             vasoObjetivoActual.rotation = Quaternion.Slerp(
                 vasoObjetivoActual.rotation,
                 rotOriginalVaso,
-                velocidadMoverVaso * Time.deltaTime
+                VelocidadMoverVaso * Time.deltaTime
             );
         }
 
@@ -195,6 +245,13 @@ public class MinijuegoCrema : MonoBehaviour
                 vasoObjetivoActual.rotation = rotOriginalVaso;
                 regresandoVaso = false;
             }
+
+            ArrastrarVaso scriptVaso = vasoObjetivoActual.GetComponent<ArrastrarVaso>();
+            if (scriptVaso != null)
+            {
+                scriptVaso.ActualizarPosicionBase();
+            }
+
             moviendoVaso = false;
         }
     }
@@ -222,18 +279,40 @@ public class MinijuegoCrema : MonoBehaviour
         }
     }
 
-    private bool HayVasoPresente(out Transform vasoObjetivo)
+    private bool VasoListoEnCentro2(out Transform vasoObjetivo)
     {
         vasoObjetivo = ObtenerVasoObjetivo();
-        return vasoObjetivo != null && vasoObjetivo.gameObject.activeInHierarchy;
+        if (vasoObjetivo == null || !vasoObjetivo.gameObject.activeInHierarchy)
+            return false;
+
+        if (vasosConCremaAplicada.Contains(vasoObjetivo.GetEntityId()))
+        {
+            Debug.Log("[MinijuegoCrema] Este vaso ya tiene crema aplicada; solo se permite una vez por vaso.");
+            return false;
+        }
+
+        if (centro2 == null)
+        {
+            Debug.LogWarning("[MinijuegoCrema] Falta encontrar o asignar 'centro (2)'.");
+            return false;
+        }
+
+        float distancia = Vector3.Distance(vasoObjetivo.position, centro2.position);
+        return distancia <= ToleranciaCentro2;
     }
 
     private void IniciarConBoquilla(TipoRelleno sabor, Transform elegida)
     {
-        if (!HayVasoPresente(out Transform vasoObjetivo))
+        if (!VasoListoEnCentro2(out Transform vasoObjetivo))
         {
-            Debug.LogWarning("[MinijuegoCrema] No hay un vaso presente en la estación de cremas.");
+            Debug.LogWarning("[MinijuegoCrema] El vaso no está presente, no está en 'centro (2)' o ya tiene crema.");
             return;
+        }
+
+        if (secuenciaTransicionCoroutine != null)
+        {
+            StopCoroutine(secuenciaTransicionCoroutine);
+            secuenciaTransicionCoroutine = null;
         }
 
         vasoObjetivoActual = vasoObjetivo;
@@ -258,7 +337,8 @@ public class MinijuegoCrema : MonoBehaviour
         if (boquillaBlanca != null) boquillaBlanca.gameObject.SetActive(boquillaBlanca == elegida);
         if (boquillaFresa != null) boquillaFresa.gameObject.SetActive(boquillaFresa == elegida);
 
-        PrepararRellenosEnVaso(vasoObjetivo, saborActual);
+        OcultarTodosLosRellenos(vasoObjetivo);
+        rellenoActual = ObtenerRellenoPorSabor(vasoObjetivo, saborActual);
 
         progreso = 0f;
         direccion = 1;
@@ -274,43 +354,142 @@ public class MinijuegoCrema : MonoBehaviour
         if (!minijuegoActivo) return;
         minijuegoActivo = false;
 
+        if (vasoObjetivoActual != null)
+        {
+            vasosConCremaAplicada.Add(vasoObjetivoActual.GetEntityId());
+        }
+
         if (rellenoActual != null)
         {
-            bool enVerde = progreso >= inicioVerde && progreso <= finVerde;
-            bool enNaranja = !enVerde && progreso >= inicioNaranja && progreso <= finNaranja;
+            float distanciaCentro = Mathf.Abs(progreso - 0.5f);
 
-            float escalaY = grosorRojo;
-            float escalaXZ = expansionAnchoRojo;
-            string zona = "ROJO";
+            float escalaY;
+            string zona;
 
-            if (enVerde)
+            if (distanciaCentro <= RadioVerde)
             {
-                escalaY = grosorVerde;
-                escalaXZ = 1f;
+                escalaY = GrosorVerde;
                 zona = "VERDE";
             }
-            else if (enNaranja)
+            else if (distanciaCentro <= RadioAmarillo)
             {
-                escalaY = grosorNaranja;
-                escalaXZ = 1.05f;
+                escalaY = GrosorAmarillo;
+                zona = "AMARILLO";
+            }
+            else if (distanciaCentro <= RadioNaranja)
+            {
+                escalaY = GrosorNaranja;
                 zona = "NARANJA";
             }
+            else
+            {
+                escalaY = GrosorRojo;
+                zona = "ROJO";
+            }
 
-            rellenoActual.localScale = new Vector3(escalaXZ, escalaY, escalaXZ);
+            rellenoActual.gameObject.SetActive(true);
+            rellenoActual.localScale = new Vector3(1f, escalaY, 1f);
+
+            Collider[] colliders = rellenoActual.GetComponentsInChildren<Collider>(true);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                colliders[i].enabled = true;
+            }
+            Physics.SyncTransforms();
+
             Debug.Log($"[MinijuegoCrema] Detenido en {progreso:F2} -> {zona} (Scale: {rellenoActual.localScale})");
         }
 
+        if (secuenciaTransicionCoroutine != null)
+            StopCoroutine(secuenciaTransicionCoroutine);
+
+        secuenciaTransicionCoroutine = StartCoroutine(SecuenciaParticulasYAvance());
+    }
+
+    private IEnumerator SecuenciaParticulasYAvance()
+    {
+        if (particulasCrema != null)
+        {
+            var main = particulasCrema.main;
+            main.startColor = saborActual switch
+            {
+                TipoRelleno.Amarillo => colorAmarillo,
+                TipoRelleno.Blanca => colorBlanca,
+                TipoRelleno.Fresa => colorFresa,
+                _ => colorAmarillo
+            };
+
+            particulasCrema.gameObject.SetActive(true);
+            particulasCrema.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            particulasCrema.Play();
+        }
+
+        if (DuracionParticulas > 0f)
+            yield return new WaitForSeconds(DuracionParticulas);
+
+        if (particulasCrema != null)
+            particulasCrema.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+        if (EsperaTrasParticulas > 0f)
+            yield return new WaitForSeconds(EsperaTrasParticulas);
+
         if (vasoObjetivoActual != null)
         {
-            destinoVasoActual = posOriginalVaso;
-            regresandoVaso = true;
-            moviendoVaso = true;
+            if (moverVasoADestinoToppings && destinoToppings != null)
+            {
+                destinoVasoActual = destinoToppings.position;
+                regresandoVaso = false;
+                moviendoVaso = true;
+            }
+            else
+            {
+                destinoVasoActual = posOriginalVaso;
+                regresandoVaso = true;
+                moviendoVaso = true;
+            }
         }
+
+        regresandoBoquilla = true;
+
+        if (navegador != null)
+            navegador.MoverAEstacionEspecifica(indiceEstacionToppings);
 
         if (canvasMinijuego != null)
             canvasMinijuego.SetActive(false);
 
-        regresandoBoquilla = true;
+        secuenciaTransicionCoroutine = null;
+    }
+
+    public void ResetearCremaEnVaso(Transform vaso)
+    {
+        if (secuenciaTransicionCoroutine != null)
+        {
+            StopCoroutine(secuenciaTransicionCoroutine);
+            secuenciaTransicionCoroutine = null;
+        }
+
+        if (particulasCrema != null)
+            particulasCrema.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        minijuegoActivo = false;
+        regresandoBoquilla = false;
+        regresandoVaso = false;
+        moviendoVaso = false;
+        boquillaActiva = null;
+        rellenoActual = null;
+        seleccionandoBoquilla = true;
+
+        RestaurarHoverBoquilla();
+        MostrarTodasLasBoquillas();
+
+        if (canvasMinijuego != null)
+            canvasMinijuego.SetActive(false);
+
+        if (vaso != null)
+        {
+            vasosConCremaAplicada.Remove(vaso.GetEntityId());
+            OcultarTodosLosRellenos(vaso);
+        }
     }
 
     private void DesactivarHoverBoquilla(Transform boquilla)
@@ -389,29 +568,32 @@ public class MinijuegoCrema : MonoBehaviour
         return null;
     }
 
-    private void PrepararRellenosEnVaso(Transform vaso, TipoRelleno elegido)
+    private void OcultarTodosLosRellenos(Transform vaso)
     {
-        Transform rA = vaso.Find(nombreAmarillo);
-        Transform rB = vaso.Find(nombreBlanca);
-        Transform rF = vaso.Find(nombreFresa);
+        Transform rA = vaso.Find(NombreAmarillo);
+        Transform rB = vaso.Find(NombreBlanca);
+        Transform rF = vaso.Find(NombreFresa);
 
-        ConfigurarEstadoInicial(rA, elegido == TipoRelleno.Amarillo);
-        ConfigurarEstadoInicial(rB, elegido == TipoRelleno.Blanca);
-        ConfigurarEstadoInicial(rF, elegido == TipoRelleno.Fresa);
-
-        rellenoActual = elegido switch
-        {
-            TipoRelleno.Amarillo => rA,
-            TipoRelleno.Blanca => rB,
-            TipoRelleno.Fresa => rF,
-            _ => rA
-        };
+        ResetearRellenoOculto(rA);
+        ResetearRellenoOculto(rB);
+        ResetearRellenoOculto(rF);
     }
 
-    private void ConfigurarEstadoInicial(Transform relleno, bool activar)
+    private void ResetearRellenoOculto(Transform relleno)
     {
         if (relleno == null) return;
         relleno.localScale = Vector3.one;
-        relleno.gameObject.SetActive(activar);
+        relleno.gameObject.SetActive(false);
+    }
+
+    private Transform ObtenerRellenoPorSabor(Transform vaso, TipoRelleno elegido)
+    {
+        return elegido switch
+        {
+            TipoRelleno.Amarillo => vaso.Find(NombreAmarillo),
+            TipoRelleno.Blanca => vaso.Find(NombreBlanca),
+            TipoRelleno.Fresa => vaso.Find(NombreFresa),
+            _ => vaso.Find(NombreAmarillo)
+        };
     }
 }

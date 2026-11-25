@@ -11,6 +11,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public int indiceEstacionFrutas = 1;
     public int indiceEstacionCremas = 2;
     public int indiceEstacionToppings = 3;
+    public bool ocultarYDesactivarEnEstacionCremas = true;
 
     public Transform workSpotCremas;
     public Transform workSpotToppings;
@@ -26,8 +27,34 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             navegador = FindAnyObjectByType<NavegadorEstacion>();
     }
 
+    private bool EstaOcultoPorEstacionCremas()
+    {
+        if (!ocultarYDesactivarEnEstacionCremas || navegador == null)
+            return false;
+
+        return navegador.ObtenerEstacionActual() == indiceEstacionCremas;
+    }
+
+    private void SincronizarVisibilidadEstacion()
+    {
+        if (!ocultarYDesactivarEnEstacionCremas || navegador == null)
+            return;
+
+        bool debeOcultar = navegador.ObtenerEstacionActual() == indiceEstacionCremas;
+        if (debeOcultar && gameObject.activeSelf)
+        {
+            mouseEncima = false;
+            gameObject.SetActive(false);
+        }
+        else if (!debeOcultar && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (EstaOcultoPorEstacionCremas()) return;
         mouseEncima = true;
     }
 
@@ -38,7 +65,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public bool EstaSobreZona(Vector2 posicionPantalla)
     {
-        if (!gameObject.activeInHierarchy) return false;
+        if (!gameObject.activeInHierarchy || EstaOcultoPorEstacionCremas()) return false;
         if (mouseEncima) return true;
         if (rectTransform == null) return false;
 
@@ -52,6 +79,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void EjecutarAccionDesdeArrastre(ArrastrarVaso vaso)
     {
+        if (EstaOcultoPorEstacionCremas()) return;
         if (ultimoFrameEjecutado == Time.frameCount) return;
         ultimoFrameEjecutado = Time.frameCount;
 
@@ -102,6 +130,9 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         int estacionActual = navegador.ObtenerEstacionActual();
 
+        if (estacionActual == indiceEstacionCremas && ocultarYDesactivarEnEstacionCremas)
+            return;
+
         if (estacionActual == indiceEstacionFrutas)
         {
             if (vaso != null && workSpotCremas != null)
@@ -146,6 +177,9 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     void Update()
     {
+        SincronizarVisibilidadEstacion();
+        if (!gameObject.activeInHierarchy || EstaOcultoPorEstacionCremas()) return;
+
         if (!mouseEncima || Mouse.current == null || !Mouse.current.leftButton.wasReleasedThisFrame)
             return;
 
