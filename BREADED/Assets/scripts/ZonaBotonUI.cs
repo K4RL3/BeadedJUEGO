@@ -98,6 +98,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private void EliminarVaso(ArrastrarVaso vaso)
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayTrash();
         Vasos gestorVasos = FindAnyObjectByType<Vasos>();
         if (gestorVasos != null)
         {
@@ -122,6 +123,7 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private void EjecutarSiguiente(ArrastrarVaso vaso)
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
         if (navegador == null)
         {
             Debug.LogWarning("ZonaBotonUI: Falta asignar navegador.");

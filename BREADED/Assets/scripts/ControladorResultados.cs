@@ -9,6 +9,9 @@ public class ControladorResultados : MonoBehaviour
     public GameObject canvasVictoria;
     public GameObject canvasGameOver;
 
+    [Header("Audio de Victoria")]
+    public bool reproducirSonidoVictoriaAlEntrar = true;
+
     private void Start()
     {
         ResolverCanvasSiFaltan();
@@ -56,6 +59,11 @@ public class ControladorResultados : MonoBehaviour
         else
         {
             Debug.LogWarning($"[Resultados] No se encontró el Canvas '{NOMBRE_CANVAS_GAMEOVER}'.");
+        }
+
+        if (aprobado && reproducirSonidoVictoriaAlEntrar && ManejadorAudio.Instance != null)
+        {
+            ManejadorAudio.Instance.PlayVic();
         }
     }
 }

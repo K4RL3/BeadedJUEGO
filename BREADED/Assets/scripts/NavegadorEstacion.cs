@@ -53,6 +53,7 @@ public class NavegadorEstacion : MonoBehaviour
 
         if (estacionActual > 0)
         {
+            if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
             estacionActual--;
             if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();

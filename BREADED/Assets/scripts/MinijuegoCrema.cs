@@ -21,7 +21,7 @@ public class MinijuegoCrema : MonoBehaviour
 
     private const float VelocidadMoverBoquilla = 3f;
     private const float VelocidadMoverVaso = 3f;
-    private const float DuracionParticulas = 2f;
+    private const float DuracionParticulas = 3f;
     private const float EsperaTrasParticulas = 1f;
 
     private const float VelocidadBarra = 0.7f;
@@ -351,6 +351,7 @@ public class MinijuegoCrema : MonoBehaviour
 
     public void DetenerMinijuego()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
         if (!minijuegoActivo) return;
         minijuegoActivo = false;
 
@@ -408,6 +409,7 @@ public class MinijuegoCrema : MonoBehaviour
 
     private IEnumerator SecuenciaParticulasYAvance()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayCrema();
         if (particulasCrema != null)
         {
             var main = particulasCrema.main;

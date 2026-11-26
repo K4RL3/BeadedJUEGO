@@ -1038,13 +1038,22 @@ MonoBehaviour:
   musicaSource: {fileID: 1240079121}
   sfxSource: {fileID: 1240079121}
   musicaFondo: {fileID: 8300000, guid: a0f01807f39b33d4bbaa728b2b2c1ecb, type: 3}
+  musicaVictoria: {fileID: 8300000, guid: a4e368a62108af24fac316faf5030bdc, type: 3}
+  nombreEscenaResultados: Resultados
+  volumenMusicaAlGanar: 0.5
+  duracionFadeRegresoMusica: 2
   sonidoHover: {fileID: 8300000, guid: 537545b420bf4044ea3ea663fd6ba384, type: 3}
   sonidoSeleccion: {fileID: 8300000, guid: 31d1ffcafae3c5945b3fb28fcba59e9b, type: 3}
   sonidoBoton: {fileID: 8300000, guid: 19e6176a833ed9a4186de95cca3ae9c3, type: 3}
   sonidoCrecimiento: {fileID: 8300000, guid: 1172aadfde1604b4c9cd41a76171e2b9, type: 3}
   sonidoCaidaVaso: {fileID: 8300000, guid: 9562153a071a0b64c95e036fe76504c7, type: 3}
+  vasoBasura: {fileID: 8300000, guid: e6e697446b075954b85e7d74f40de134, type: 3}
+  GAMEOVER: {fileID: 8300000, guid: e147a684c9566da4caa440c99f8aecfd, type: 3}
+  Victoria: {fileID: 8300000, guid: a4e368a62108af24fac316faf5030bdc, type: 3}
+  sonidoConfeti: {fileID: 8300000, guid: 431a817e1d3644747a2856b9b466b375, type: 3}
   sonidoHoverJarabes: {fileID: 8300000, guid: e0caf9c7fbf9a004c8cf695701310f7e, type: 3}
-  sonidoCaidaFruta: {fileID: 0}
+  sonidoCrema: {fileID: 8300000, guid: dd2a390b3e6c5a04c8967ce924d6a5ce, type: 3}
+  sonidoIngredienteVolador: {fileID: 8300000, guid: 0eca2762b813a764ebfec35bac008356, type: 3}
 --- !u!4 &1240079120
 Transform:
   m_ObjectHideFlags: 0

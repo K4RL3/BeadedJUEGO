@@ -12,11 +12,13 @@ public class IrAPantallaInicio : MonoBehaviour
 
     public void CargarPantallaInicio()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
         CargarEscena(nombreEscenaInicio, "nombreEscenaInicio");
     }
 
     public void CargarEstacionPedidos1()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
         CargarEscena(nombreEscenaEstacionPedidos1, "nombreEscenaEstacionPedidos1");
     }
 

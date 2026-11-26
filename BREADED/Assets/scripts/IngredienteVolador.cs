@@ -13,6 +13,7 @@ public class IngredienteVolador : MonoBehaviour
 
     public void AtraparEnVaso()
     {
+        if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayIngredienteVolador();
         estaAtrapado = true;
         CancelInvoke("AutoDestruir"); // Cancelamos el temporizador, ya está a salvo
         Debug.Log("Ingrediente asegurado en el vaso.");

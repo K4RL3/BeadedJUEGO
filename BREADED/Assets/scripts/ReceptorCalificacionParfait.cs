@@ -192,6 +192,11 @@ public class ReceptorCalificacionParfait : MonoBehaviour
         cortinaConfeti.gameObject.SetActive(true);
         cortinaConfeti.Clear();
         cortinaConfeti.Play();
+
+        if (ManejadorAudio.Instance != null)
+        {
+            ManejadorAudio.Instance.PlayConfeti();
+        }
     }
 
     public void DetenerConfeti()
@@ -220,10 +225,7 @@ public class ReceptorCalificacionParfait : MonoBehaviour
 
         DetenerConfeti();
 
-        if (limpiarParfaitAlCambiarEscena)
-        {
-            FinalizarYLimpiarParfait();
-        }
+
 
         rutinaCambioEscena = null;
 
@@ -342,20 +344,7 @@ public class ReceptorCalificacionParfait : MonoBehaviour
         return ignorarMayusculas ? limpio.ToLowerInvariant() : limpio;
     }
 
-    public void FinalizarYLimpiarParfait()
-    {
-        if (ParfaitMemoria.VasoFinal != null)
-        {
-            Destroy(ParfaitMemoria.VasoFinal.gameObject);
-        }
-
-        ParfaitMemoria.Limpiar();
-
-        if (PedidoMemoria.TicketsActivos != null && PedidoMemoria.TicketsActivos.Count > 0)
-        {
-            PedidoMemoria.TicketsActivos.RemoveAt(PedidoMemoria.TicketsActivos.Count - 1);
-        }
-    }
+    
 
     [ContextMenu("Test / Imprimir Diagnostico")]
     public void ImprimirDiagnostico()
