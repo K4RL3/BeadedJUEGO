@@ -44,4 +44,15 @@ public static class ParfaitMemoria
         NombreVaso = !string.IsNullOrEmpty(nombreAnterior) ? nombreAnterior : vaso.gameObject.name;
         ParfaitListoParaCalificar = true;
     }
+
+    public static void PrepararParaCalificacion(ArrastrarVaso vaso)
+    {
+        GuardarEstadoFinal(vaso);
+
+        if (vaso == null) return;
+
+        vaso.enabled = false;
+        vaso.transform.SetParent(null);
+        Object.DontDestroyOnLoad(vaso.gameObject);
+    }
 }

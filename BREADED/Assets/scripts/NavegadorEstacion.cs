@@ -13,12 +13,14 @@ public class NavegadorEstacion : MonoBehaviour
         Extra = 4
     }
 
+    private const float EscalaCalificacion = 2.31f;
+
     [SerializeField] private Transform[] estaciones;
     public static int estacionInicial = 0;
 
     private int indiceEscenaPedidos1 = 2;
     public int indiceEscenaCalificacion = 5;
-    public string nombreDestinoCalificacion = "PuntoVasoCalificacion";
+    public string nombreDestinoCalificacion = "VasoCalificacion";
 
     [Header("Botones y Textos de Navegación")]
     public GameObject botonAdelante;
@@ -91,7 +93,11 @@ public class NavegadorEstacion : MonoBehaviour
     private void PrepararVasoParaCalificacion()
     {
         ArrastrarVaso vaso = ObtenerVasoActivo();
-        if (vaso == null) return;
+        if (vaso == null)
+        {
+            Debug.LogWarning("[NavegadorEstacion] No se encontró ningún ArrastrarVaso activo para llevar a calificación.");
+            return;
+        }
 
         ParfaitMemoria.GuardarEstadoFinal(vaso);
 
@@ -99,13 +105,20 @@ public class NavegadorEstacion : MonoBehaviour
         vaso.transform.SetParent(null);
         DontDestroyOnLoad(vaso.gameObject);
 
+        Debug.Log($"[NavegadorEstacion] Vaso '{vaso.gameObject.name}' marcado con DontDestroyOnLoad para escena índice {indiceEscenaCalificacion}.");
+
         SceneManager.sceneLoaded -= OnEscenaCalificacionCargada;
         SceneManager.sceneLoaded += OnEscenaCalificacionCargada;
     }
 
     private void OnEscenaCalificacionCargada(Scene escena, LoadSceneMode modo)
     {
-        if (escena.buildIndex != indiceEscenaCalificacion) return;
+        if (escena.buildIndex != indiceEscenaCalificacion)
+        {
+            Debug.Log($"[NavegadorEstacion] Escena cargada '{escena.name}' (índice {escena.buildIndex}) no coincide con indiceEscenaCalificacion ({indiceEscenaCalificacion}).");
+            return;
+        }
+
         SceneManager.sceneLoaded -= OnEscenaCalificacionCargada;
 
         ArrastrarVaso vaso = ParfaitMemoria.VasoFinal != null
@@ -113,9 +126,33 @@ public class NavegadorEstacion : MonoBehaviour
             : FindAnyObjectByType<ArrastrarVaso>();
 
         GameObject destino = GameObject.Find(nombreDestinoCalificacion);
-        if (vaso != null && destino != null)
+        if (destino == null && nombreDestinoCalificacion != "VasoCalificacion")
         {
+            destino = GameObject.Find("VasoCalificacion");
+        }
+
+        if (vaso == null)
+        {
+            Debug.LogWarning("[NavegadorEstacion] En la escena de calificación no se encontró el vaso.");
+            return;
+        }
+
+        vaso.gameObject.SetActive(true);
+        vaso.transform.SetParent(null);
+
+        if (destino != null)
+        {
+            vaso.transform.position = destino.transform.position;
+            vaso.transform.rotation = destino.transform.rotation;
+            vaso.transform.localScale = Vector3.one * EscalaCalificacion;
             vaso.MoverAEstacion(destino.transform, true);
+            vaso.transform.localScale = Vector3.one * EscalaCalificacion;
+            Debug.Log($"[NavegadorEstacion] Vaso '{vaso.gameObject.name}' colocado en '{destino.name}' con escala {EscalaCalificacion}.");
+        }
+        else
+        {
+            vaso.transform.localScale = Vector3.one * EscalaCalificacion;
+            Debug.LogWarning($"[NavegadorEstacion] No se encontró el objeto destino '{nombreDestinoCalificacion}' en la escena de calificación.");
         }
     }
 

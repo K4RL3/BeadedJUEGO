@@ -305,6 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IrAPantallaInicio
   nombreEscenaInicio: PantallaInicio
+  nombreEscenaEstacionPedidos1: "Estaci\xF3nPedidos1"
   reiniciarEstadoVasos: 1
 --- !u!4 &202233119
 Transform:
@@ -2436,8 +2437,8 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.4
-      minScalar: 0.2
+      scalar: 0.3
+      minScalar: 0.14
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -2824,8 +2825,8 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   UVModule:
     serializedVersion: 2
-    enabled: 0
-    mode: 0
+    enabled: 1
+    mode: 1
     timeMode: 0
     fps: 30
     frameOverTime:
@@ -2943,7 +2944,7 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 0}
+    - sprite: {fileID: 21300000, guid: 9c1f659907032ea4b8f38a952a15083b, type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -8519,9 +8520,9 @@ MonoBehaviour:
   - {fileID: 1476967167}
   indiceEscenaCalificacion: 5
   nombreDestinoCalificacion: PuntoVasoCalificacion
-  botonAdelante: {fileID: 0}
-  textoBotonAtras: {fileID: 0}
-  textoBotonAdelante: {fileID: 0}
+  botonAdelante: {fileID: 145936953}
+  textoBotonAtras: {fileID: 1208085599}
+  textoBotonAdelante: {fileID: 1960985502}
   estacionesConBotonesEspeciales: 010000000200000003000000
   botonEliminar: {fileID: 321077974}
   botonIrACremas: {fileID: 798526539}

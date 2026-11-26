@@ -153,6 +153,16 @@ public class ZonaBotonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
         else if (estacionActual == indiceEstacionToppings)
         {
+            ArrastrarVaso vasoAEnviar = vaso != null ? vaso : ObtenerVasoActivo();
+            if (vasoAEnviar != null)
+            {
+                ParfaitMemoria.PrepararParaCalificacion(vasoAEnviar);
+            }
+            else
+            {
+                Debug.LogWarning("ZonaBotonUI: No se encontro vaso para pasar a calificacion.");
+            }
+
             navegador.IrACalificacionConVaso();
         }
     }
