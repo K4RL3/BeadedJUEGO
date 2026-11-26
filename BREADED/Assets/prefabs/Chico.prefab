@@ -37,6 +37,7 @@ Transform:
   - {fileID: 7971071104271958532}
   - {fileID: 614356205019308085}
   - {fileID: 3795855472411088054}
+  - {fileID: 2563275273629318002}
   - {fileID: 1876144252107348826}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -101,6 +102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArrastrarVaso
   esVasoSeleccionado: 0
   ocultarNoSeleccionadosAlAvanzar: 0
+  indiceEstacionCremas: 2
+  bloquearArrastreEnEstacionCremas: 1
   procesadoPorBoton: 0
 --- !u!1 &1780016475167176122
 GameObject:
@@ -415,7 +418,7 @@ GameObject:
   - component: {fileID: 8892612911306346688}
   - component: {fileID: 1228629528565595207}
   m_Layer: 0
-  m_Name: ZonaCaida
+  m_Name: ZonaCaidaFrutas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -455,8 +458,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.20193447, y: 0.10564008, z: 0.21361007}
-  m_Center: {x: 0, y: 0.14979246, z: 0}
+  m_Size: {x: 0.20193447, y: 0.05228192, z: 0.21361007}
+  m_Center: {x: 0, y: 0.12311339, z: 0}
 --- !u!114 &1228629528565595207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,6 +472,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a69287df0ec5b64ba84219eaad5356d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DetectorVaso
+--- !u!1 &8019071601448494178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2563275273629318002}
+  - component: {fileID: 8530721978597731691}
+  - component: {fileID: 3233861593332922681}
+  m_Layer: 0
+  m_Name: ZonaCaidaToppings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2563275273629318002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019071601448494178}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6728804980940164956}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8530721978597731691
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019071601448494178}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2647281, y: 0.055153266, z: 0.2522795}
+  m_Center: {x: 0, y: 0.18526158, z: 0}
+--- !u!114 &3233861593332922681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019071601448494178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faee931b6602f6444843b92365105acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectorTopping
+  padreDestino: {fileID: 2563275273629318002}
 --- !u!1001 &1792121561855932208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -669,7 +739,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 958568334614431416, guid: 65d9b96714251e644bbb6d5ba447b821, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6191874825068830392, guid: 65d9b96714251e644bbb6d5ba447b821, type: 3}
       propertyPath: m_LocalPosition.x

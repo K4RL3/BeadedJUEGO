@@ -37,6 +37,7 @@ Transform:
   - {fileID: 2579148227093670352}
   - {fileID: 1326784255958530833}
   - {fileID: 2827476854550438509}
+  - {fileID: 307617539040267099}
   - {fileID: 3294892361682003256}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -101,6 +102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArrastrarVaso
   esVasoSeleccionado: 0
   ocultarNoSeleccionadosAlAvanzar: 0
+  indiceEstacionCremas: 2
+  bloquearArrastreEnEstacionCremas: 1
   procesadoPorBoton: 0
 --- !u!1 &2203200281845184549
 GameObject:
@@ -114,7 +117,7 @@ GameObject:
   - component: {fileID: 1836049589042750500}
   - component: {fileID: 2409218478320118606}
   m_Layer: 0
-  m_Name: ZonaCaida
+  m_Name: ZonaCaidaFrutas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,8 +157,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3154935, y: 0.18898734, z: 0.30862388}
-  m_Center: {x: 0.0035635834, y: 0.20899212, z: -0.00037172443}
+  m_Size: {x: 0.3154935, y: 0.17813398, z: 0.30862388}
+  m_Center: {x: 0.0035635834, y: 0.20356658, z: -0.00037172443}
 --- !u!114 &2409218478320118606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +171,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a69287df0ec5b64ba84219eaad5356d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DetectorVaso
+--- !u!1 &3282907927154639716
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 307617539040267099}
+  - component: {fileID: 5309003371334202050}
+  - component: {fileID: 4060692121224940475}
+  m_Layer: 0
+  m_Name: ZonaCaidaToppings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &307617539040267099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282907927154639716}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.382, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 387322266401610945}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5309003371334202050
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282907927154639716}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3154935, y: 0.118461505, z: 0.30862388}
+  m_Center: {x: 0.0035635834, y: 0.05702234, z: -0.00037172443}
+--- !u!114 &4060692121224940475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282907927154639716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faee931b6602f6444843b92365105acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectorTopping
+  padreDestino: {fileID: 307617539040267099}
 --- !u!1 &3801421587611196225
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,9 +632,9 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: -6399389532877196149, guid: a2f1d43af3dc4f2409eec7eb2860f65b, type: 3}
 --- !u!1001 &6144002617289520102
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -658,9 +728,9 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: -6399389532877196149, guid: a2f1d43af3dc4f2409eec7eb2860f65b, type: 3}
 --- !u!1001 &7643052023674954403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -749,9 +819,9 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: -6399389532877196149, guid: a2f1d43af3dc4f2409eec7eb2860f65b, type: 3}
 --- !u!4 &8543922227113114254 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2054636132986902573, guid: d4c0bacb2fccbaf43881cc18981fdeef, type: 3}

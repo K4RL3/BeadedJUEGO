@@ -8523,6 +8523,7 @@ MonoBehaviour:
   botonAdelante: {fileID: 145936953}
   textoBotonAtras: {fileID: 1208085599}
   textoBotonAdelante: {fileID: 1960985502}
+  zonaCaidaToppings: {fileID: 0}
   estacionesConBotonesEspeciales: 010000000200000003000000
   botonEliminar: {fileID: 321077974}
   botonIrACremas: {fileID: 798526539}

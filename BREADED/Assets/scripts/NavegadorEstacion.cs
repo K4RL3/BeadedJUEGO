@@ -27,6 +27,9 @@ public class NavegadorEstacion : MonoBehaviour
     public TextMeshProUGUI textoBotonAtras;
     public TextMeshProUGUI textoBotonAdelante;
 
+    [Header("Zonas de Caída por Estación")]
+    public GameObject zonaCaidaToppings;
+
     [Header("Botones Especiales")]
     public int[] estacionesConBotonesEspeciales = { (int)NombreEstacion.Fruta, (int)NombreEstacion.Crema };
     public GameObject botonEliminar;
@@ -45,6 +48,27 @@ public class NavegadorEstacion : MonoBehaviour
         }
         ActualizarTextos();
         ActualizarBotonesEspeciales();
+        ActualizarZonaToppings();
+    }
+
+    private void ActualizarZonaToppings()
+    {
+        bool esEstacionToppings = ObtenerNombreEstacionActual() == NombreEstacion.Toppings;
+
+        if (zonaCaidaToppings != null)
+        {
+            zonaCaidaToppings.SetActive(esEstacionToppings);
+        }
+
+        ArrastrarVaso vasoActivo = ObtenerVasoActivo();
+        if (vasoActivo != null)
+        {
+            Transform zonaEnVaso = vasoActivo.transform.Find("ZonaCaidaToppings");
+            if (zonaEnVaso != null)
+            {
+                zonaEnVaso.gameObject.SetActive(esEstacionToppings);
+            }
+        }
     }
 
     public void BotonAtras()
@@ -53,11 +77,11 @@ public class NavegadorEstacion : MonoBehaviour
 
         if (estacionActual > 0)
         {
-            if (ManejadorAudio.Instance != null) ManejadorAudio.Instance.PlayBoton();
             estacionActual--;
             if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
+            ActualizarZonaToppings();
         }
         else
         {
@@ -76,6 +100,7 @@ public class NavegadorEstacion : MonoBehaviour
             if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
+            ActualizarZonaToppings();
         }
     }
 
@@ -248,6 +273,7 @@ public class NavegadorEstacion : MonoBehaviour
             if (cameraMover != null) cameraMover.MoverAEstacion(estaciones[estacionActual]);
             ActualizarTextos();
             ActualizarBotonesEspeciales();
+            ActualizarZonaToppings();
         }
     }
 }
